@@ -1,0 +1,32 @@
+= Demo for querying Confluent Platform with Prometheus
+
+This demo show how to use Prometheus for querying metrics from Confluent Cloud.
+Please have a look at this article for details: https://www.confluent.io/blog/bring-your-own-monitoring-with-confluent-cloud/
+
+== Preconditions
+
+In your Confluent Cloud organization, create an API key, assign it to a service account and grant `MetricsViewer" permissions.
+Customize the Prometheus configuration file template `docker/prometheus/prometheus.yml-template` and copy it to `docker/prometheus/prometheus.yml`.
+
+== Running Prometheus
+
+Start the containers by running (if you want to use filebeat for fetching logs):
+```bash
+docker compose up -d
+```
+
+Stopping the containers with removal of all created volumes (be careful!):
+```bash
+docker compose down -v
+```
+
+Cleaning up (CAREFUL: THIS WILL DELETE ALL UNUSED VOLUMES):
+```bash
+docker volumes prune
+```
+
+== Usage
+
+Access `prometheis` with your web browser here (you need to create an exception as the certificate is self-signed):
+
+* URL: `https://prometheus:9090`
