@@ -27,6 +27,10 @@ docker volumes prune
 
 == Usage
 
-Access `prometheis` with your web browser here (you need to create an exception as the certificate is self-signed):
+Access `prometheus` with your web browser here:
 
-* URL: `https://prometheus:9090`
+* URL: `http://localhost:9090`
+
+Access `grafana` with your web browser here (username: grafana, password: grafana):
+
+* URL: `http://localhost:3000`
