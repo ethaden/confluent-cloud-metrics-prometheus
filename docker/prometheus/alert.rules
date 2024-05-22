@@ -1,0 +1,12 @@
+groups:
+- name: Confluent Cloud Example
+  rules:
+
+  # Alert for data in any topic in a Kafka cluster
+  - alert: kafka_topic_contains_data
+    expr: confluent_kafka_server_retained_bytes offset 1m > 0
+    labels:
+      severity: page
+    annotations:
+      summary: "Data in topic {{ $labels.topic}} in Kafka cluster {{ $labels.kafka_id }}"
+      description: "The topic {{ $labels.topic}} in Kafka cluster {{ $labels.kafka_id }} contains more than 0 bytes of data (test alert)"

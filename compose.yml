@@ -10,16 +10,17 @@ services:
       - ./docker/prometheus/:/etc/prometheus/
       - data-prometheus:/prometheus
 
-  # alertmanager:
-  #   image: prom/alertmanager
-  #   ports:
-  #     - 9093:9093
-  #   volumes:
-  #     - ./docker/alertmanager/:/etc/alertmanager/
-  #   restart: always
-  #   command:
-  #     - '--config.file=/etc/alertmanager/config.yml'
-  #     - '--storage.path=/alertmanager'
+# Please customize ./docker/alertmanager/config.yml before enabling this container
+#  alertmanager:
+#    image: prom/alertmanager
+#    ports:
+#      - 9093:9093
+#    volumes:
+#      - ./docker/alertmanager/:/etc/alertmanager/
+#    restart: always
+#    command:
+#      - '--config.file=/etc/alertmanager/config.yml'
+#      - '--storage.path=/alertmanager'
 
   grafana:
     image: grafana/grafana
