@@ -27,8 +27,8 @@ rule_files:
 scrape_configs:
   # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
   - job_name: 'prometheus'
-    # Override the global default and scrape targets from this job every 5 seconds.
-    scrape_interval: 15s
+    # Override the global default and scrape targets from this job every 60 seconds.
+    scrape_interval: 60s
     static_configs:
          - targets: ['localhost:9090']
   - job_name: 'Confluent Cloud'
@@ -50,3 +50,27 @@ scrape_configs:
       # "resource.connector.id":
       #   - lcc-1234
       #   - lcc-2345
+    # Relabel metrics after scraping
+    #metric_relabel_configs:
+      # - action: replace
+      #   source_labels: [topic]
+      #   target_label: tenant
+      #   regex: 'topic.*'
+      #   replacement: 'tenant_for_prefix_topic'
+      # - action: replace
+      #   source_labels: [topic]
+      #   target_label: tenant
+      #   regex: 'sample.*'
+      #   replacement: 'tenant_for_prefix_sample'
+      #- action: replace
+      #  source_labels: [topic]
+      #  target_label: environment
+      #  # Assuming this topic naming convention: <env_name>.<tenant_name>.<domain_name>.<...>
+      #  regex: '([^.]*)\.([^.]*)\..*'
+      #  replacement: '$1'
+      #- action: replace
+      #  source_labels: [topic]
+      #  target_label: tenant
+      #  # Assuming this topic naming convention: <env_name>.<tenant_name>.<domain_name>.<...>
+      #  regex: '([^.]*)\.([^.]*)\..*'
+      #  replacement: '$2'
