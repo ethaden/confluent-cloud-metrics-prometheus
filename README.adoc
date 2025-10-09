@@ -10,18 +10,28 @@ Customize the Prometheus configuration file template `docker/prometheus/promethe
 
 == Running Prometheus
 
+If you want to try the kafka-exporter, copy the .env-template to .env and customize it.
+Then enable the docker compose profile by setting:
+
+```console
+export COMPOSE_PROFILES=kafka-exporter
+````
+
 Start the containers by running (if you want to use filebeat for fetching logs):
-```bash
+
+```console
 docker compose up -d
 ```
 
 Stopping the containers with removal of all created volumes (be careful!):
-```bash
+
+```console
 docker compose down -v
 ```
 
 Cleaning up (CAREFUL: THIS WILL DELETE ALL UNUSED VOLUMES):
-```bash
+
+```console
 docker volumes prune
 ```
 

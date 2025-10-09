@@ -42,6 +42,21 @@ services:
     ports:
       - 3000:3000
 
+  kafka-exporter:
+    profiles:
+      - kafka-exporter
+    image: danielqsj/kafka-exporter 
+    container_name: kafka-exporter
+    command: 
+      - "--kafka.server=${KAFKA_BOOTSTRAP_SERVERS}"
+      - "--sasl.enabled"
+      - "--sasl.username=${KAFKA_API_KEY}"
+      - "--sasl.password=${KAFKA_API_SECRET}"
+      - "--sasl.mechanism=PLAIN"
+      - "--tls.enabled"
+    ports:
+      - 9308:9308 
+
 volumes:
   data-zookeeper-log:
   data-zookeeper-data:
