@@ -116,3 +116,20 @@ scrape_configs:
         # Assuming this topic naming convention: <env_name>.<tenant_name>.<domain_name>.<...>
         regex: '([^.]*)\.([^.]*)\..*'
         replacement: '$2'
+  - job_name: 'confluent_cloud_quotas'
+    metrics_path: /probe
+    params:
+      module: [confluent_cloud_quotas]
+      target: ['https://api.confluent.cloud/service-quota/v1']
+    static_configs:
+      - targets:
+          # Targets point to the Service Quotas REST endpoint with required scope queries
+          #- https://api.confluent.cloud/service-quota/v1
+          - ccloud-quota-exporter:7979
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: 'ccloud-quota-exporter:7979' # The hostname and port where your JSON exporter is hosted

@@ -55,11 +55,24 @@ services:
       - "--sasl.mechanism=PLAIN"
       - "--tls.enabled"
     ports:
-      - 9308:9308 
+      - 9308:9308
+
+  ccloud-quota-exporter:
+    image: prometheuscommunity/json-exporter:latest
+    container_name: ccloud-quota-exporter
+    hostname: ccloud-quota-exporter
+    ports:
+      - "7979:7979"
+    environment:
+      - CONFLUENT_CLOUD_API_KEY=${CONFLUENT_CLOUD_API_KEY}
+      - CONFLUENT_CLOUD_API_SECRET=${CONFLUENT_CLOUD_API_SECRET}
+    volumes:
+      - ./docker/prometheus/json_exporter.yml:/config.yml:ro
+    # Dynamically generate the authorization header on container startup
+    command:
+      - "--config.file=/config.yml"
+    restart: unless-stopped
 
 volumes:
-  data-zookeeper-log:
-  data-zookeeper-data:
-  data-kafka:
   data-prometheus:
   data-grafana:

@@ -1,0 +1,30 @@
+modules:
+  confluent_cloud_quotas:
+    http_client_config:
+      basic_auth:
+        username: "${CONFLUENT_CLOUD_API_KEY}"
+        password: "${CONFLUENT_CLOUD_API_SECRET}"
+    headers:
+      Accept: "application/json"
+      Content-Type: "application/json"
+    # Map out the JSON array elements returned by Confluent's applied-quotas API
+    metrics:
+      # 1. Quota Limit Value
+      - name: ccloud_quota_limit
+        type: gauge
+        help: "The maximum threshold/limit allowed for the specific Confluent Cloud resource quota."
+        path: "{ .data[*].limit }"
+        labels:
+          quota_id: "{ .data[*].id }"
+          display_name: "{ .data[*].display_name }"
+          scope: "{ .data[*].scope }"
+
+      # 2. Current Resource Usage (if supported by the specific quota)
+      - name: ccloud_quota_usage
+        type: gauge
+        help: "The current resource consumption or footprint against the assigned quota."
+        path: "{ .data[*].usage }"
+        labels:
+          quota_id: "{ .data[*].id }"
+          display_name: "{ .data[*].display_name }"
+          scope: "{ .data[*].scope }"
