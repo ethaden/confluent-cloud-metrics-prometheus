@@ -69,8 +69,7 @@ services:
     volumes:
       - ./docker/prometheus/json_exporter.yml:/config.yml:ro
     # Dynamically generate the authorization header on container startup
-    command:
-      - "--config.file=/config.yml"
+    command: "--config.file=/config.yml"
     restart: unless-stopped
 
 volumes:

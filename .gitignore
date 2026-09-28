@@ -1,2 +1,3 @@
 docker/prometheus/prometheus.yml
+docker/prometheus/json_exporter.yml
 .env
