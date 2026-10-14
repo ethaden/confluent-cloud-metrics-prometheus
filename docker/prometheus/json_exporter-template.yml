@@ -1,0 +1,53 @@
+modules:
+  confluent_cloud_quotas:
+    http_client_config:
+      basic_auth:
+        username: "YOUR_CONFLUENT_CLOUD_API_KEY"
+        password: "YOUR_CONFLUENT_CLOUD_API_SECRET"
+        # Alternatively, use password file
+       # password_file: /tmp/mysecret.txt
+      tls_config:
+        insecure_skip_verify: false
+    headers:
+      Accept: "application/json"
+      Content-Type: "application/json"
+    # Map out the JSON array elements returned by Confluent's applied-quotas API
+    metrics:
+      # 1. Applied Quota
+      - name: ccloud_quota_applied_limit
+        type: object
+        help: "The maximum threshold/limit allowed for the specific Confluent Cloud resource quota."
+        path: "{ .data[*] }"
+        labels:
+          quota_id: "{ .id }"
+          display_name: "{ .display_name }"
+          scope: "{ .scope }"
+          kafka_cluster: "{ .kafka_cluster.id || ''}"
+        values:
+          status: '{.applied_limit }'
+
+      # 2. Default Quota (might be lower than applied quota)
+      - name: ccloud_quota_default_limit
+        type: object
+        help: "The maximum threshold/limit allowed for the specific Confluent Cloud resource quota."
+        path: "{ .data[*] }"
+        labels:
+          quota_id: "{ .id }"
+          display_name: "{ .display_name }"
+          scope: "{ .scope }"
+          kafka_cluster: "{ .kafka_cluster.id || ''}"
+        values:
+          status: '{.default_limit  || 0 }'
+
+      # 3. Current Resource Usage (if supported by the specific quota)
+      - name: ccloud_quota_usage
+        type: object
+        help: "The current resource consumption or footprint against the assigned quota."
+        path: "{ .data[*] }"
+        labels:
+          quota_id: "{ .id }"
+          display_name: "{ .display_name }"
+          scope: "{ .scope }"
+          kafka_cluster: "{ .kafka_cluster.id || ''}"
+        values:
+          status: '{ .usage || 0 }'

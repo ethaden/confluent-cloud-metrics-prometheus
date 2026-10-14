@@ -1,0 +1,19 @@
+# Managed identities are only useful when the code runs on Azure.
+# On a developer machine, just run "az login" first, then start the code
+# You can read values from environment variables by using "${env:NAME_OF_THE_ENVIRONMENT_VARIABLE}"
+auth: 
+  # Use either "azure" or "basicauth". Configure the selected method properly.
+  #selected: azure
+  selected: basicauth
+  azure:
+    app_id: XXXXX-YYYY-AAA-BBBB-CCCCCCCCCCCC
+    pool_id: pool-ABCD
+    #logging_enabled: false # Default: false
+    #min_token_validity: 30 # Default: 30
+  basicauth:
+    global:
+      key: ${env:CONFLUENT_CLOUD_API_KEY}
+      secret: ${env:CONFLUENT_CLOUD_API_SECRET}
+http_port: 7979
+# Do need refresh too frequently, default: 900 seconds (15 minutes)
+refresh_interval: 900

@@ -1,0 +1,52 @@
+//devcontainer.json
+{
+  "name": "Confluent-Cloud-Metrics-Prometheus",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  // Create and customize your environment in .env in the main folder, see .env-example for reference
+  "runArgs": ["--env-file", "${localWorkspaceFolder}/.env"],
+  // No workspaceMount/workspaceFolder: by default the project folder is mounted to
+  // /workspaces/confluent-cloud-metrics-prometheus and opened in VS Code
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:1": {
+      "configureZshAsDefaultShell": true
+    }
+  },
+  "customizations": {
+    // Configure properties specific to VS Code.
+    "vscode": {
+      // Add the IDs of extensions you want installed when the container is created.
+      "extensions": ["ms-python.python", "ms-python.pylint", "ms-python.debugpy", "ms-python.black-formatter", "ms-python.vscode-pylance", "ms-python.vscode-python-envs", "GitHub.copilot-chat"]
+    }
+  },
+  // Docker-outside-of-Docker: the Docker CLI in this container talks to Docker Desktop on the host
+  "mounts": [
+    "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
+  ],
+  "containerEnv": {
+    // Host path of the project folder; compose.yml uses it for bind mounts because
+    // Docker Desktop resolves them on the host, not inside this container
+    "LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}",
+  // Tells uv to store its cache in the mounted project folder so it survives rebuilds
+    "UV_CACHE_DIR": "${containerWorkspaceFolder}/.uv_cache",
+    // Ignore the host's Git configuration: VS Code copies ~/.gitconfig into the
+    // container, so point git at a container-only global config file instead
+    "GIT_CONFIG_GLOBAL": "/root/.gitconfig.devcontainer",
+    "GIT_CONFIG_COUNT": "1",
+    "GIT_CONFIG_KEY_0": "protocol.ssh.allow",
+    "GIT_CONFIG_VALUE_0": "always",
+    "SSH_AUTH_SOCK": "/root/.ssh/auth_sock",
+    "CONFLUENT_CLOUD_API_KEY": "${localEnv:CONFLUENT_CLOUD_API_KEY}",
+    "CONFLUENT_CLOUD_API_SECRET": "${localEnv:CONFLUENT_CLOUD_API_SECRET}",
+    // Set the following in .env in the main folder, not here:
+    //"GIT_AUTHOR_NAME": "${localEnv:GIT_AUTHOR_NAME}",
+    //"GIT_AUTHOR_EMAIL": "${localEnv:GIT_AUTHOR_EMAIL}"
+    // Forwards the temporary variables created by the initializeCommand below
+    // "GIT_AUTHOR_NAME": "${localEnv:HOST_GIT_NAME}",
+    // "GIT_AUTHOR_EMAIL": "${localEnv:HOST_GIT_EMAIL}",
+    // "GIT_COMMITTER_NAME": "${localEnv:HOST_GIT_NAME}",
+    // "GIT_COMMITTER_EMAIL": "${localEnv:HOST_GIT_EMAIL}"
+  },
+  "remoteEnv": { "LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}" }
+}

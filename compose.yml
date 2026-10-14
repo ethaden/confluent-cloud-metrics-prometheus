@@ -6,9 +6,12 @@ services:
     image: prom/prometheus:latest
     ports:
       - 9090:9090
+    environment:
+      CONFLUENT_CLOUD_API_KEY: ${CONFLUENT_CLOUD_API_KEY}
+      CONFLUENT_CLOUD_API_SECRET: ${CONFLUENT_CLOUD_API_SECRET}
     command: --config.file=/etc/prometheus/prometheus.yml --log.level=debug
     volumes:
-      - ./docker/prometheus/:/etc/prometheus/
+      - ${LOCAL_WORKSPACE_FOLDER:-.}/docker/prometheus/:/etc/prometheus/
       - data-prometheus:/prometheus
 
 # Please customize ./docker/alertmanager/config.yml before enabling this container
@@ -17,7 +20,7 @@ services:
 #    ports:
 #      - 9093:9093
 #    volumes:
-#      - ./docker/alertmanager/:/etc/alertmanager/
+#      - ${LOCAL_WORKSPACE_FOLDER:-.}/docker/alertmanager/:/etc/alertmanager/
 #    restart: always
 #    command:
 #      - '--config.file=/etc/alertmanager/config.yml'
@@ -33,7 +36,7 @@ services:
       driver: local
     volumes:
       - data-grafana:/var/lib/grafana
-      - ./docker/grafana/provisioning/:/etc/grafana/provisioning/
+      - ${LOCAL_WORKSPACE_FOLDER:-.}/docker/grafana/provisioning/:/etc/grafana/provisioning/
     environment:
       GF_SECURITY_ADMIN_USER: grafana
       GF_SECURITY_ADMIN_PASSWORD: grafana
@@ -57,20 +60,33 @@ services:
     ports:
       - 9308:9308
 
+#  ccloud-quota-exporter:
+#    image: prometheuscommunity/json-exporter:latest
+#    container_name: ccloud-quota-exporter
+#    hostname: ccloud-quota-exporter
+#    ports:
+#      - "7979:7979"
+#    volumes:
+#      - ${LOCAL_WORKSPACE_FOLDER:-.}/docker/prometheus/json_exporter.yml:/config.yml:ro
+#    # Dynamically generate the authorization header on container startup
+#    command: 
+#      - --config.file=/config.yml
+#      - --log.level=debug
+#    restart: unless-stopped
+
   ccloud-quota-exporter:
-    image: prometheuscommunity/json-exporter:latest
+    build:
+      context: .
+      dockerfile: ./docker/ccloud-quota-exporter/Dockerfile
     container_name: ccloud-quota-exporter
     hostname: ccloud-quota-exporter
     ports:
-      - "7979:7979"
-    environment:
-      - CONFLUENT_CLOUD_API_KEY=${CONFLUENT_CLOUD_API_KEY}
-      - CONFLUENT_CLOUD_API_SECRET=${CONFLUENT_CLOUD_API_SECRET}
+      - 7979:7979
     volumes:
-      - ./docker/prometheus/json_exporter.yml:/config.yml:ro
-    # Dynamically generate the authorization header on container startup
-    command: "--config.file=/config.yml"
-    restart: unless-stopped
+      - ${LOCAL_WORKSPACE_FOLDER:-.}/python/config.yaml:/srv/python/config.yaml:ro
+    environment:
+      CONFLUENT_CLOUD_API_KEY: ${CONFLUENT_CLOUD_API_KEY}
+      CONFLUENT_CLOUD_API_SECRET: ${CONFLUENT_CLOUD_API_SECRET}
 
 volumes:
   data-prometheus:

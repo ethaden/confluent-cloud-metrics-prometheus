@@ -82,15 +82,16 @@ scrape_configs:
     honor_timestamps: true
     http_sd_configs:
       # Here, we restrict auto-discovery to one environment and the type kafka clusters. Please customize to your needs
-      - url: 'https://api.telemetry.confluent.cloud/v2/metrics/cloud/discovery?env=<my-env-id>>&resource_type=kafka'
+      #- url: 'https://api.telemetry.confluent.cloud/v2/metrics/cloud/discovery?env=<my-env-id>>&resource_type=kafka'
+      - url: 'https://api.telemetry.confluent.cloud/v2/metrics/cloud/discovery?resource_type=kafka'
         refresh_interval: "5m"
         basic_auth:
-          username: 'CONFLUENT-CLOUD-USERNAME'
-          password: 'CONFLUENT-CLOUD-PASSWORD'
+          username: '${CONFLUENT_CLOUD_API_KEY}'
+          password: '${CONFLUENT_CLOUD_API_SECRET}'
     scheme: https
     basic_auth:
-      username: 'CONFLUENT-CLOUD-USERNAME'
-      password: 'CONFLUENT-CLOUD-PASSWORD'
+      username: '${CONFLUENT_CLOUD_API_KEY}'
+      password: '${CONFLUENT_CLOUD_API_SECRET}'
 
     # Relabel metrics after scraping
     metric_relabel_configs:
@@ -116,19 +117,46 @@ scrape_configs:
         # Assuming this topic naming convention: <env_name>.<tenant_name>.<domain_name>.<...>
         regex: '([^.]*)\.([^.]*)\..*'
         replacement: '$2'
+  # Metrics for the json_exporter itself
+  - job_name: confluent_cloud_quotas_json_exporter
+    static_configs:
+      - targets:
+          ## Location of the json exporter's real <hostname>:<port>
+          - ccloud-quota-exporter:7979
+  # Metrics from Confluent Cloud, scraped through json_exporter
   - job_name: 'confluent_cloud_quotas'
     metrics_path: /probe
     params:
       module: [confluent_cloud_quotas]
-      target: ['https://api.confluent.cloud/service-quota/v1']
     static_configs:
-      - targets:
-          # Targets point to the Service Quotas REST endpoint with required scope queries
-          #- https://api.confluent.cloud/service-quota/v1
-          - ccloud-quota-exporter:7979
+      # Targets point to the Service Quotas REST endpoint with required scope queries
+      - targets: [https://api.confluent.cloud/service-quota/v1/applied-quotas]
+        labels:
+          param_scope: 'organization'
+      - targets: [https://api.confluent.cloud/service-quota/v1/applied-quotas]
+        labels:
+          param_scope: 'environment'
+      - targets: [https://api.confluent.cloud/service-quota/v1/applied-quotas]
+        labels:
+          param_scope: 'kafka_cluster'
+      - targets: [https://api.confluent.cloud/service-quota/v1/applied-quotas]
+        labels:
+          param_scope: 'network'
+      - targets: [https://api.confluent.cloud/service-quota/v1/applied-quotas]
+        labels:
+          param_scope: 'user_accounts'
+      - targets: [https://api.confluent.cloud/service-quota/v1/applied-quotas]
+        labels:
+          param_scope: 'service_account'
     relabel_configs:
-      - source_labels: [__address__]
+      - source_labels: [__address__, param_scope]
+        regex: '([^;]+);([^;]+)'
+        replacement: '${1}?scope=${2}'
         target_label: __param_target
+      - source_labels: [param_scope]
+        target_label: scope
+      - action: labeldrop
+        regex: "param_scope"
       - source_labels: [__param_target]
         target_label: instance
       - target_label: __address__
