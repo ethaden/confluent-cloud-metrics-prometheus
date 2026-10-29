@@ -10,31 +10,44 @@ from ccloud_auth_provider import CCloud_Auth_Provider
 from ccloud_config import CCloud_Config
 
 # 1. Prometheus Metrics Configuration
-CONFLUENT_QUOTA_DEFAULT = Gauge(
-    'confluent_quota_default_limit', 
-    'The standard fallback/default limit assigned by Confluent Cloud before overrides.', 
-    ['organization_id', 'scope', 'quota_id', 'environment_id', 'network_id', 'kafka_cluster']
-)
+SCOPES = ["organization", "environment", "kafka_cluster", "network"]
+#BASE_LABELS = ['organization_id', 'scope', 'quota_id', 'environment_id', 'network_id', 'kafka_cluster']
+BASE_LABELS = ['organization_id', 'scope', 'quota_id']
 
-CONFLUENT_QUOTA_APPLIED = Gauge(
-    'confluent_quota_applied_limit', 
-    'The active threshold currently enforced on your environment.', 
-    ['organization_id', 'scope', 'quota_id', 'environment_id', 'network_id','kafka_cluster']
-)
-
-CONFLUENT_QUOTA_USAGE = Gauge(
-    'confluent_quota_usage', 
-    'The current utilization level tracking against your quota limit.', 
-    ['organization_id', 'scope', 'quota_id', 'environment_id', 'network_id', 'kafka_cluster']
-)
+SCOPE_GAUGES_DEFAULT_LIMIT = {}
+SCOPE_GAUGES_APPLIED_LIMIT = {}
+SCOPE_GAUGES_USAGE = {}
+for scope in SCOPES:
+    labels = BASE_LABELS
+    if scope == "environment":
+        labels = BASE_LABELS + ['environment_id']
+    elif scope == "network":
+        labels = BASE_LABELS + ['environment_id', 'network_id']
+    elif scope == "kafka_cluster":
+        labels = BASE_LABELS + ['environment_id', 'kafka_cluster']
+    SCOPE_GAUGES_DEFAULT_LIMIT[scope] = Gauge(
+        f'confluent_cloud_service_quota_default_limit_{scope}',
+        f'The standard fallback/default limit assigned by Confluent Cloud for scope {scope} before overrides.',
+        labels
+    )
+    SCOPE_GAUGES_APPLIED_LIMIT[scope] = Gauge(
+        f'confluent_cloud_service_quota_applied_limit_{scope}',
+        f'The active threshold currently enforced on your Confluent Cloud environment for scope {scope}.',
+        labels
+    )
+    SCOPE_GAUGES_USAGE[scope] = Gauge(
+        f'confluent_cloud_service_quota_usage_{scope}',
+        f'The current utilization level tracking against your Confluent Cloud quota limit for scope {scope}.',
+        labels
+    )
 
 SCRAPE_DURATION = Gauge(
-    'confluent_quota_scrape_duration_seconds', 
+    'confluent_cloud_service_scrape_duration_seconds', 
     'Total wall clock time taken to execute the background scope gather.'
 )
 
 RATE_LIMIT_HIT_TOTAL = Gauge(
-    'confluent_quota_rate_limit_hits_total',
+    'confluent_cloud_service_quota_rate_limit_hits_total',
     'Total number of times a 429 Rate Limit was encountered and managed.'
 )
 
@@ -109,27 +122,41 @@ class Prometheus_Confluent_Cloud_Quota_Exporter:
                     
                     default_limit = item.get("default_limit")
                     applied_limit = item.get("applied_limit")
-                    organization_id = item.get("organization").get("id")
-                    if "environment" in item and "id" in item["environment"]:
-                        environment_id = item.get("environment").get("id")
-                    else:
-                        environment_id = ""
-                    if "network" in item and "id" in item["network"]:
-                        network_id = item.get("network").get("id")
-                    else:
-                        network_id = ""
-                    if "kafka_cluster" in item and "id" in item["kafka_cluster"]:
-                        kafka_cluster = item.get("kafka_cluster").get("id")
-                    else:
-                        kafka_cluster = ""            
                     usage = item.get("usage")
-                    
-                    if default_limit is not None:
-                        CONFLUENT_QUOTA_DEFAULT.labels(scope=scope, quota_id=quota_id, organization_id=organization_id, environment_id=environment_id, network_id=network_id, kafka_cluster=kafka_cluster).set(default_limit)
-                    if applied_limit is not None:
-                        CONFLUENT_QUOTA_APPLIED.labels(scope=scope, quota_id=quota_id, organization_id=organization_id, environment_id=environment_id, network_id=network_id, kafka_cluster=kafka_cluster).set(applied_limit)
-                    if usage is not None:
-                        CONFLUENT_QUOTA_USAGE.labels(scope=scope, quota_id=quota_id, organization_id=organization_id, environment_id=environment_id, network_id=network_id, kafka_cluster=kafka_cluster).set(usage)
+                    organization_id = item.get("organization").get("id")
+                    if scope == "organization":
+                        if default_limit is not None:
+                            SCOPE_GAUGES_DEFAULT_LIMIT[scope].labels(scope=scope, quota_id=quota_id, organization_id=organization_id).set(default_limit)
+                        if applied_limit is not None:
+                            SCOPE_GAUGES_APPLIED_LIMIT[scope].labels(scope=scope, quota_id=quota_id, organization_id=organization_id).set(applied_limit)
+                        if usage is not None:
+                            SCOPE_GAUGES_USAGE[scope].labels(scope=scope, quota_id=quota_id, organization_id=organization_id).set(usage)
+                    elif scope == "environment":
+                        environment_id = item.get("environment").get("id")
+                        if default_limit is not None:
+                            SCOPE_GAUGES_DEFAULT_LIMIT[scope].labels(scope=scope, quota_id=quota_id, organization_id=organization_id, environment_id=environment_id).set(default_limit)
+                        if applied_limit is not None:
+                            SCOPE_GAUGES_APPLIED_LIMIT[scope].labels(scope=scope, quota_id=quota_id, organization_id=organization_id, environment_id=environment_id).set(applied_limit)
+                        if usage is not None:
+                            SCOPE_GAUGES_USAGE[scope].labels(scope=scope, quota_id=quota_id, organization_id=organization_id, environment_id=environment_id).set(usage)
+                    elif scope == "network":
+                        environment_id = item.get("environment").get("id")
+                        network_id = item.get("network").get("id")
+                        if default_limit is not None:
+                            SCOPE_GAUGES_DEFAULT_LIMIT[scope].labels(scope=scope, quota_id=quota_id, organization_id=organization_id, environment_id=environment_id, network_id=network_id).set(default_limit)
+                        if applied_limit is not None:
+                            SCOPE_GAUGES_APPLIED_LIMIT[scope].labels(scope=scope, quota_id=quota_id, organization_id=organization_id, environment_id=environment_id, network_id=network_id).set(applied_limit)
+                        if usage is not None:
+                            SCOPE_GAUGES_USAGE[scope].labels(scope=scope, quota_id=quota_id, organization_id=organization_id, environment_id=environment_id, network_id=network_id).set(usage)
+                    elif scope == "kafka_cluster":
+                        environment_id = item.get("environment").get("id")
+                        kafka_cluster = item.get("kafka_cluster").get("id")
+                        if default_limit is not None:
+                            SCOPE_GAUGES_DEFAULT_LIMIT[scope].labels(scope=scope, quota_id=quota_id, organization_id=organization_id, environment_id=environment_id, kafka_cluster=kafka_cluster).set(default_limit)
+                        if applied_limit is not None:
+                            SCOPE_GAUGES_APPLIED_LIMIT[scope].labels(scope=scope, quota_id=quota_id, organization_id=organization_id, environment_id=environment_id, kafka_cluster=kafka_cluster).set(applied_limit)
+                        if usage is not None:
+                            SCOPE_GAUGES_USAGE[scope].labels(scope=scope, quota_id=quota_id, organization_id=organization_id, environment_id=environment_id, kafka_cluster=kafka_cluster).set(usage)
                 
                 # Extract pagination tracker safely
                 metadata = data.get("metadata", {})

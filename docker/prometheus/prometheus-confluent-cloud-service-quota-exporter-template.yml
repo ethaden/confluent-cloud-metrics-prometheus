@@ -1,0 +1,138 @@
+# Example configuration. Please have a look at this article:
+# https://www.confluent.io/blog/bring-your-own-monitoring-with-confluent-cloud/
+# Customize this template and copy it to "prometheus.yml", then run docker compose
+global:
+  scrape_interval:     1m # By default, scrape targets every 15 seconds.
+  evaluation_interval: 1m # By default, scrape targets every 15 seconds.
+
+  # Attach these labels to any time series or alerts when communicating with
+  # external systems (federation, remote storage, Alertmanager).
+#  external_labels:
+#      monitor: 'my-project'
+
+# # Load and evaluate rules in this file every 'evaluation_interval' seconds.
+rule_files:
+  - 'alert.rules'
+
+# # alert
+# alerting:
+#   alertmanagers:
+#   - scheme: http
+#     static_configs:
+#     - targets:
+#       - "alertmanager:9093"
+
+# A scrape configuration containing exactly one endpoint to scrape:
+# Here it's Prometheus itself.
+scrape_configs:
+  # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
+  - job_name: 'prometheus'
+    # Override the global default and scrape targets from this job every 60 seconds.
+    scrape_interval: 60s
+    static_configs:
+         - targets: ['localhost:9090']
+  # Configuration without auto-discovery ("classic" way)
+#  - job_name: 'Confluent Cloud'
+#    scrape_interval: 1m
+#    scrape_timeout: 1m
+#    honor_timestamps: true
+#    static_configs:
+#      - targets:
+#        - 'api.telemetry.confluent.cloud'
+#    scheme: https
+#    basic_auth:
+#      username: 'CONFLUENT-CLOUD-USERNAME'
+#      password: 'CONFLUENT-CLOUD-PASSWORD'
+#    metrics_path: '/v2/metrics/cloud/export'
+#    params:
+#      "resource.kafka.id":
+#        - 'lkc-1234' # CUSTOMIZE ME
+#        - 'lkc-2345' # CUSTOMIZE ME
+#      # "resource.connector.id":
+#      #   - lcc-1234
+#      #   - lcc-2345
+#    # Relabel metrics after scraping
+#    #metric_relabel_configs:
+#      # - action: replace
+#      #   source_labels: [topic]
+#      #   target_label: tenant
+#      #   regex: 'topic.*'
+#      #   replacement: 'tenant_for_prefix_topic'
+#      # - action: replace
+#      #   source_labels: [topic]
+#      #   target_label: tenant
+#      #   regex: 'sample.*'
+#      #   replacement: 'tenant_for_prefix_sample'
+#      #- action: replace
+#      #  source_labels: [topic]
+#      #  target_label: environment
+#      #  # Assuming this topic naming convention: <env_name>.<tenant_name>.<domain_name>.<...>
+#      #  regex: '([^.]*)\.([^.]*)\..*'
+#      #  replacement: '$1'
+#      #- action: replace
+#      #  source_labels: [topic]
+#      #  target_label: tenant
+#      #  # Assuming this topic naming convention: <env_name>.<tenant_name>.<domain_name>.<...>
+#      #  regex: '([^.]*)\.([^.]*)\..*'
+#      #  replacement: '$2'
+
+  - job_name: 'Confluent Cloud Auto-discover'
+    scrape_interval: 1m
+    scrape_timeout: 1m
+    honor_timestamps: true
+    http_sd_configs:
+      # Here, we restrict auto-discovery to one environment and the type kafka clusters. Please customize to your needs
+      #- url: 'https://api.telemetry.confluent.cloud/v2/metrics/cloud/discovery?env=<my-env-id>>&resource_type=kafka'
+      - url: 'https://api.telemetry.confluent.cloud/v2/metrics/cloud/discovery?resource_type=kafka'
+        refresh_interval: "5m"
+        basic_auth:
+          username: '${CONFLUENT_CLOUD_API_KEY}'
+          password: '${CONFLUENT_CLOUD_API_SECRET}'
+    scheme: https
+    basic_auth:
+      username: '${CONFLUENT_CLOUD_API_KEY}'
+      password: '${CONFLUENT_CLOUD_API_SECRET}'
+
+    # Relabel metrics after scraping
+    metric_relabel_configs:
+      # - action: replace
+      #   source_labels: [topic]
+      #   target_label: tenant
+      #   regex: 'topic.*'
+      #   replacement: 'tenant_for_prefix_topic'
+      # - action: replace
+      #   source_labels: [topic]
+      #   target_label: tenant
+      #   regex: 'sample.*'
+      #   replacement: 'tenant_for_prefix_sample'
+      - action: replace
+        source_labels: [topic]
+        target_label: environment
+        # Assuming this topic naming convention: <env_name>.<tenant_name>.<domain_name>.<...>
+        regex: '([^.]*)\.([^.]*)\..*'
+        replacement: '$1'
+      - action: replace
+        source_labels: [topic]
+        target_label: tenant
+        # Assuming this topic naming convention: <env_name>.<tenant_name>.<domain_name>.<...>
+        regex: '([^.]*)\.([^.]*)\..*'
+        replacement: '$2'
+  # Metrics for the confluent_cloud_service_quota_exporter
+  - job_name: confluent_cloud_service_quota_exporter
+    static_configs:
+      - targets:
+          ## Location of the json exporter's real <hostname>:<port>
+          - ccloud-quota-exporter:7979
+  # Metrics from Confluent Cloud, scraped through confluent_cloud_service_quota_exporter
+  - job_name: 'confluent_cloud_quotas'
+    metrics_path: /probe
+    params:
+      module: [confluent_cloud_quotas]
+    static_configs:
+      # Targets point to the Service Quotas REST endpoint with required scope queries
+      - targets: [https://api.confluent.cloud/service-quota/v1/applied-quotas]
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+      - target_label: __address__
+        replacement: 'ccloud-quota-exporter:7979' # The hostname and port where your JSON exporter is hosted

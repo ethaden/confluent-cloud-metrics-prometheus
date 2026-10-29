@@ -10,3 +10,8 @@ groups:
     annotations:
       summary: "Data in topic {{ $labels.topic}} in Kafka cluster {{ $labels.kafka_id }}"
       description: "The topic {{ $labels.topic}} in Kafka cluster {{ $labels.kafka_id }} contains more than 0 bytes of data (test alert)"
+  # Join Confluent Cloud Quota Usage, applied limit and default limit
+#- name: confluent_cloud_service_quota_usage_with_limit
+#  rules:
+#    - record: confluent_cloud_service_quota_usage_relative_to_applied_limit
+#      expr: (confluent_cloud_service_quota_usage / on(job, instance, organization_id, scope, quota_id, environment_id, network_id, kafka_cluster) #confluent_cloud_service_quota_applied_limit)

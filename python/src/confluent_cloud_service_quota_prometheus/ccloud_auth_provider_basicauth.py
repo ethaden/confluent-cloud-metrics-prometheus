@@ -3,7 +3,6 @@
 import base64
 
 from typing import Any, Dict, Tuple
-from decode_jwt import decode_jwt
 
 from azure.identity import DefaultAzureCredential
 from azure.core.credentials import AccessToken

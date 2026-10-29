@@ -87,6 +87,8 @@ services:
     environment:
       CONFLUENT_CLOUD_API_KEY: ${CONFLUENT_CLOUD_API_KEY}
       CONFLUENT_CLOUD_API_SECRET: ${CONFLUENT_CLOUD_API_SECRET}
+    # For debugging
+    #command: 'sh -c "trap : TERM INT; tail -f /dev/null & wait"'
 
 volumes:
   data-prometheus:

@@ -14,7 +14,7 @@ modules:
     # Map out the JSON array elements returned by Confluent's applied-quotas API
     metrics:
       # 1. Applied Quota
-      - name: ccloud_quota_applied_limit
+      - name: confluent_cloud_service_quota_applied_limit
         type: object
         help: "The maximum threshold/limit allowed for the specific Confluent Cloud resource quota."
         path: "{ .data[*] }"
@@ -27,7 +27,7 @@ modules:
           status: '{.applied_limit }'
 
       # 2. Default Quota (might be lower than applied quota)
-      - name: ccloud_quota_default_limit
+      - name: confluent_cloud_service_quota_default_limit
         type: object
         help: "The maximum threshold/limit allowed for the specific Confluent Cloud resource quota."
         path: "{ .data[*] }"
@@ -40,7 +40,7 @@ modules:
           status: '{.default_limit  || 0 }'
 
       # 3. Current Resource Usage (if supported by the specific quota)
-      - name: ccloud_quota_usage
+      - name: confluent_cloud_service_quota_usage
         type: object
         help: "The current resource consumption or footprint against the assigned quota."
         path: "{ .data[*] }"
