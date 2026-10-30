@@ -48,9 +48,11 @@
                       "kind": "DataQuery",
                       "spec": {
                         "editorMode": "builder",
+                        "exemplar": false,
                         "expr": "confluent_cloud_service_quota_default_limit_organization{organization_id=~\"$organization_id\"}",
+                        "instant": true,
                         "legendFormat": "__auto",
-                        "range": true
+                        "range": false
                       },
                       "version": "v0"
                     },
@@ -69,10 +71,11 @@
                       "kind": "DataQuery",
                       "spec": {
                         "editorMode": "builder",
+                        "exemplar": false,
                         "expr": "confluent_cloud_service_quota_applied_limit_organization{organization_id=~\"$organization_id\"}",
-                        "instant": false,
+                        "instant": true,
                         "legendFormat": "__auto",
-                        "range": true
+                        "range": false
                       },
                       "version": "v0"
                     },
@@ -91,10 +94,11 @@
                       "kind": "DataQuery",
                       "spec": {
                         "editorMode": "builder",
+                        "exemplar": false,
                         "expr": "confluent_cloud_service_quota_usage_organization{organization_id=~\"$organization_id\"}",
-                        "instant": false,
+                        "instant": true,
                         "legendFormat": "__auto",
-                        "range": true
+                        "range": false
                       },
                       "version": "v0"
                     },
@@ -124,30 +128,6 @@
                   }
                 },
                 {
-                  "group": "organize",
-                  "kind": "Transformation",
-                  "spec": {
-                    "options": {
-                      "excludeByName": {},
-                      "includeByName": {},
-                      "indexByName": {
-                        "Time": 0,
-                        "confluent_cloud_service_quota_applied_limit_organization": 4,
-                        "confluent_cloud_service_quota_default_limit_organization": 3,
-                        "confluent_cloud_service_quota_usage_organization": 5,
-                        "organization_id": 2,
-                        "quota_id": 1
-                      },
-                      "renameByName": {
-                        "confluent_cloud_service_quota_applied_limit_organization": "Applied Limit",
-                        "confluent_cloud_service_quota_default_limit_organization": "Default Limit",
-                        "confluent_cloud_service_quota_usage_organization": "Usage",
-                        "organization_id": ""
-                      }
-                    }
-                  }
-                },
-                {
                   "group": "convertFieldType",
                   "kind": "Transformation",
                   "spec": {
@@ -155,18 +135,84 @@
                       "conversions": [
                         {
                           "destinationType": "number",
-                          "targetField": "Default Limit"
+                          "targetField": "confluent_cloud_service_quota_default_limit_organization"
                         },
                         {
                           "destinationType": "number",
-                          "targetField": "Applied Limit"
+                          "targetField": "confluent_cloud_service_quota_applied_limit_organization"
                         },
                         {
                           "destinationType": "number",
-                          "targetField": "Usage"
+                          "targetField": "confluent_cloud_service_quota_usage_organization"
                         }
                       ],
                       "fields": {}
+                    }
+                  }
+                },
+                {
+                  "group": "groupBy",
+                  "kind": "Transformation",
+                  "spec": {
+                    "options": {
+                      "fields": {
+                        "Applied Limit": {
+                          "aggregations": [
+                            "last"
+                          ],
+                          "operation": "aggregate"
+                        },
+                        "Default Limit": {
+                          "aggregations": [
+                            "last"
+                          ],
+                          "operation": "aggregate"
+                        },
+                        "Time": {
+                          "aggregations": [
+                            "last"
+                          ],
+                          "operation": "aggregate"
+                        },
+                        "Usage": {
+                          "aggregations": [
+                            "last"
+                          ],
+                          "operation": "aggregate"
+                        },
+                        "Usage [%]": {
+                          "aggregations": [
+                            "last"
+                          ],
+                          "operation": "aggregate"
+                        },
+                        "confluent_cloud_service_quota_applied_limit_organization": {
+                          "aggregations": [
+                            "last"
+                          ],
+                          "operation": "aggregate"
+                        },
+                        "confluent_cloud_service_quota_default_limit_organization": {
+                          "aggregations": [
+                            "last"
+                          ],
+                          "operation": "aggregate"
+                        },
+                        "confluent_cloud_service_quota_usage_organization": {
+                          "aggregations": [
+                            "last"
+                          ],
+                          "operation": "aggregate"
+                        },
+                        "organization_id": {
+                          "aggregations": [],
+                          "operation": "groupby"
+                        },
+                        "quota_id": {
+                          "aggregations": [],
+                          "operation": "groupby"
+                        }
+                      }
                     }
                   }
                 },
@@ -180,14 +226,14 @@
                         "left": {
                           "matcher": {
                             "id": "byName",
-                            "options": "Usage"
+                            "options": "confluent_cloud_service_quota_usage_organization (last)"
                           }
                         },
                         "operator": "/",
                         "right": {
                           "matcher": {
                             "id": "byName",
-                            "options": "Applied Limit"
+                            "options": "confluent_cloud_service_quota_applied_limit_organization (last)"
                           }
                         }
                       },
@@ -195,6 +241,50 @@
                       "reduce": {
                         "reducer": "sum"
                       }
+                    }
+                  }
+                },
+                {
+                  "group": "organize",
+                  "kind": "Transformation",
+                  "spec": {
+                    "options": {
+                      "excludeByName": {},
+                      "includeByName": {},
+                      "indexByName": {
+                        "Time (last)": 6,
+                        "Usage [%]": 2,
+                        "confluent_cloud_service_quota_applied_limit_organization (last)": 4,
+                        "confluent_cloud_service_quota_default_limit_organization (last)": 5,
+                        "confluent_cloud_service_quota_usage_organization (last)": 3,
+                        "organization_id": 1,
+                        "quota_id": 0
+                      },
+                      "renameByName": {
+                        "Time (last)": "Last Updated",
+                        "confluent_cloud_service_quota_applied_limit_organization": "Applied Limit",
+                        "confluent_cloud_service_quota_applied_limit_organization (last)": "Applied Limit",
+                        "confluent_cloud_service_quota_default_limit_organization": "Default Limit",
+                        "confluent_cloud_service_quota_default_limit_organization (last)": "(Default Limit)",
+                        "confluent_cloud_service_quota_usage_organization": "Usage",
+                        "confluent_cloud_service_quota_usage_organization (last)": "Usage",
+                        "organization_id": ""
+                      }
+                    }
+                  }
+                },
+                {
+                  "group": "sortBy",
+                  "kind": "Transformation",
+                  "spec": {
+                    "options": {
+                      "fields": {},
+                      "sort": [
+                        {
+                          "desc": true,
+                          "field": "Usage [%]"
+                        }
+                      ]
                     }
                   }
                 }
@@ -251,6 +341,119 @@
                       {
                         "id": "unit",
                         "value": "percentunit"
+                      },
+                      {
+                        "id": "custom.width",
+                        "value": 94
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "Usage [%]",
+                      "scope": "series"
+                    },
+                    "properties": [
+                      {
+                        "id": "thresholds",
+                        "value": {
+                          "mode": "absolute",
+                          "steps": [
+                            {
+                              "color": "green",
+                              "value": 0
+                            },
+                            {
+                              "color": "#EAB839",
+                              "value": 0.8
+                            },
+                            {
+                              "color": "red",
+                              "value": 0.9
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "id": "custom.cellOptions",
+                        "value": {
+                          "applyToRow": false,
+                          "mode": "gradient",
+                          "type": "color-background"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "quota_id",
+                      "scope": "series"
+                    },
+                    "properties": []
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "organization_id",
+                      "scope": "series"
+                    },
+                    "properties": []
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "Applied Limit",
+                      "scope": "series"
+                    },
+                    "properties": [
+                      {
+                        "id": "custom.width",
+                        "value": 116
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "(Default Limit)",
+                      "scope": "series"
+                    },
+                    "properties": [
+                      {
+                        "id": "custom.width",
+                        "value": 115
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "Usage",
+                      "scope": "series"
+                    },
+                    "properties": [
+                      {
+                        "id": "custom.width",
+                        "value": 78
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "Last Updated",
+                      "scope": "series"
+                    },
+                    "properties": [
+                      {
+                        "id": "unit",
+                        "value": "dateTimeAsIso"
+                      },
+                      {
+                        "id": "custom.width",
+                        "value": 161
                       }
                     ]
                   }
@@ -266,7 +469,7 @@
           }
         }
       },
-      "panel-2": {
+      "panel-3": {
         "kind": "Panel",
         "spec": {
           "data": {
@@ -285,9 +488,11 @@
                       "kind": "DataQuery",
                       "spec": {
                         "editorMode": "builder",
+                        "exemplar": false,
                         "expr": "confluent_cloud_service_quota_default_limit_environment{organization_id=~\"$organization_id\", environment_id=~\"$environment_id\"}",
+                        "instant": true,
                         "legendFormat": "__auto",
-                        "range": true
+                        "range": false
                       },
                       "version": "v0"
                     },
@@ -306,10 +511,11 @@
                       "kind": "DataQuery",
                       "spec": {
                         "editorMode": "builder",
+                        "exemplar": false,
                         "expr": "confluent_cloud_service_quota_applied_limit_environment{organization_id=~\"$organization_id\", environment_id=~\"$environment_id\"}",
-                        "instant": false,
+                        "instant": true,
                         "legendFormat": "__auto",
-                        "range": true
+                        "range": false
                       },
                       "version": "v0"
                     },
@@ -328,10 +534,11 @@
                       "kind": "DataQuery",
                       "spec": {
                         "editorMode": "builder",
+                        "exemplar": false,
                         "expr": "confluent_cloud_service_quota_usage_environment{organization_id=~\"$organization_id\", environment_id=~\"$environment_id\"}",
-                        "instant": false,
+                        "instant": true,
                         "legendFormat": "__auto",
-                        "range": true
+                        "range": false
                       },
                       "version": "v0"
                     },
@@ -362,36 +569,6 @@
                   }
                 },
                 {
-                  "group": "organize",
-                  "kind": "Transformation",
-                  "spec": {
-                    "options": {
-                      "excludeByName": {},
-                      "includeByName": {},
-                      "indexByName": {
-                        "Time": 0,
-                        "confluent_cloud_service_quota_applied_limit_environment": 5,
-                        "confluent_cloud_service_quota_default_limit_environment": 4,
-                        "confluent_cloud_service_quota_usage_environment": 6,
-                        "environment_id": 3,
-                        "organization_id": 2,
-                        "quota_id": 1
-                      },
-                      "orderByMode": "manual",
-                      "renameByName": {
-                        "confluent_cloud_service_quota_applied_limit_environment": "Applied Limit",
-                        "confluent_cloud_service_quota_applied_limit_organization": "Applied Limit",
-                        "confluent_cloud_service_quota_default_limit_environment": "Default Limit",
-                        "confluent_cloud_service_quota_default_limit_organization": "Default Limit",
-                        "confluent_cloud_service_quota_usage_environment": "Usage",
-                        "confluent_cloud_service_quota_usage_organization": "Usage",
-                        "organization_id": "",
-                        "quota_id": ""
-                      }
-                    }
-                  }
-                },
-                {
                   "group": "convertFieldType",
                   "kind": "Transformation",
                   "spec": {
@@ -399,18 +576,106 @@
                       "conversions": [
                         {
                           "destinationType": "number",
-                          "targetField": "Default Limit"
+                          "targetField": "confluent_cloud_service_quota_default_limit_environment"
                         },
                         {
                           "destinationType": "number",
-                          "targetField": "Applied Limit"
+                          "targetField": "confluent_cloud_service_quota_applied_limit_environment"
                         },
                         {
                           "destinationType": "number",
-                          "targetField": "Usage"
+                          "targetField": "confluent_cloud_service_quota_usage_environment"
                         }
                       ],
                       "fields": {}
+                    }
+                  }
+                },
+                {
+                  "group": "groupBy",
+                  "kind": "Transformation",
+                  "spec": {
+                    "options": {
+                      "fields": {
+                        "Applied Limit": {
+                          "aggregations": [
+                            "last"
+                          ],
+                          "operation": "aggregate"
+                        },
+                        "Default Limit": {
+                          "aggregations": [
+                            "last"
+                          ],
+                          "operation": "aggregate"
+                        },
+                        "Time": {
+                          "aggregations": [
+                            "last"
+                          ],
+                          "operation": "aggregate"
+                        },
+                        "Usage": {
+                          "aggregations": [
+                            "last"
+                          ],
+                          "operation": "aggregate"
+                        },
+                        "Usage [%]": {
+                          "aggregations": [
+                            "last"
+                          ],
+                          "operation": "aggregate"
+                        },
+                        "confluent_cloud_service_quota_applied_limit_environment": {
+                          "aggregations": [
+                            "last"
+                          ],
+                          "operation": "aggregate"
+                        },
+                        "confluent_cloud_service_quota_applied_limit_organization": {
+                          "aggregations": [
+                            "last"
+                          ],
+                          "operation": "aggregate"
+                        },
+                        "confluent_cloud_service_quota_default_limit_environment": {
+                          "aggregations": [
+                            "last"
+                          ],
+                          "operation": "aggregate"
+                        },
+                        "confluent_cloud_service_quota_default_limit_organization": {
+                          "aggregations": [
+                            "last"
+                          ],
+                          "operation": "aggregate"
+                        },
+                        "confluent_cloud_service_quota_usage_environment": {
+                          "aggregations": [
+                            "last"
+                          ],
+                          "operation": "aggregate"
+                        },
+                        "confluent_cloud_service_quota_usage_organization": {
+                          "aggregations": [
+                            "last"
+                          ],
+                          "operation": "aggregate"
+                        },
+                        "environment_id": {
+                          "aggregations": [],
+                          "operation": "groupby"
+                        },
+                        "organization_id": {
+                          "aggregations": [],
+                          "operation": "groupby"
+                        },
+                        "quota_id": {
+                          "aggregations": [],
+                          "operation": "groupby"
+                        }
+                      }
                     }
                   }
                 },
@@ -424,14 +689,14 @@
                         "left": {
                           "matcher": {
                             "id": "byName",
-                            "options": "Usage"
+                            "options": "confluent_cloud_service_quota_usage_environment (last)"
                           }
                         },
                         "operator": "/",
                         "right": {
                           "matcher": {
                             "id": "byName",
-                            "options": "Applied Limit"
+                            "options": "confluent_cloud_service_quota_applied_limit_environment (last)"
                           }
                         }
                       },
@@ -441,12 +706,60 @@
                       }
                     }
                   }
+                },
+                {
+                  "group": "organize",
+                  "kind": "Transformation",
+                  "spec": {
+                    "options": {
+                      "excludeByName": {},
+                      "includeByName": {},
+                      "indexByName": {
+                        "Time (last)": 7,
+                        "Usage [%]": 3,
+                        "confluent_cloud_service_quota_applied_limit_environment (last)": 5,
+                        "confluent_cloud_service_quota_default_limit_environment (last)": 6,
+                        "confluent_cloud_service_quota_usage_environment (last)": 4,
+                        "environment_id": 2,
+                        "organization_id": 1,
+                        "quota_id": 0
+                      },
+                      "renameByName": {
+                        "Time (last)": "Last Updated",
+                        "confluent_cloud_service_quota_applied_limit_environment (last)": "Applied Limit",
+                        "confluent_cloud_service_quota_applied_limit_organization": "Applied Limit",
+                        "confluent_cloud_service_quota_applied_limit_organization (last)": "Applied Limit",
+                        "confluent_cloud_service_quota_default_limit_environment (last)": "(Default Limit)",
+                        "confluent_cloud_service_quota_default_limit_organization": "Default Limit",
+                        "confluent_cloud_service_quota_default_limit_organization (last)": "(Default Limit)",
+                        "confluent_cloud_service_quota_usage_environment (last)": "Usage",
+                        "confluent_cloud_service_quota_usage_organization": "Usage",
+                        "confluent_cloud_service_quota_usage_organization (last)": "Usage",
+                        "organization_id": ""
+                      }
+                    }
+                  }
+                },
+                {
+                  "group": "sortBy",
+                  "kind": "Transformation",
+                  "spec": {
+                    "options": {
+                      "fields": {},
+                      "sort": [
+                        {
+                          "desc": true,
+                          "field": "Usage [%]"
+                        }
+                      ]
+                    }
+                  }
                 }
               ]
             }
           },
           "description": "",
-          "id": 2,
+          "id": 3,
           "links": [],
           "title": "Environment Service Quotas",
           "vizConfig": {
@@ -495,6 +808,47 @@
                       {
                         "id": "unit",
                         "value": "percentunit"
+                      },
+                      {
+                        "id": "custom.width",
+                        "value": 94
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "Usage [%]",
+                      "scope": "series"
+                    },
+                    "properties": [
+                      {
+                        "id": "thresholds",
+                        "value": {
+                          "mode": "absolute",
+                          "steps": [
+                            {
+                              "color": "green",
+                              "value": 0
+                            },
+                            {
+                              "color": "#EAB839",
+                              "value": 0.8
+                            },
+                            {
+                              "color": "red",
+                              "value": 0.9
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "id": "custom.cellOptions",
+                        "value": {
+                          "applyToRow": false,
+                          "mode": "gradient",
+                          "type": "color-background"
+                        }
                       }
                     ]
                   },
@@ -504,12 +858,7 @@
                       "options": "quota_id",
                       "scope": "series"
                     },
-                    "properties": [
-                      {
-                        "id": "custom.width",
-                        "value": 470
-                      }
-                    ]
+                    "properties": []
                   },
                   {
                     "matcher": {
@@ -517,10 +866,1154 @@
                       "options": "organization_id",
                       "scope": "series"
                     },
+                    "properties": []
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "Applied Limit",
+                      "scope": "series"
+                    },
                     "properties": [
                       {
                         "id": "custom.width",
-                        "value": 305
+                        "value": 105
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "(Default Limit)",
+                      "scope": "series"
+                    },
+                    "properties": [
+                      {
+                        "id": "custom.width",
+                        "value": 114
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "Usage",
+                      "scope": "series"
+                    },
+                    "properties": [
+                      {
+                        "id": "custom.width",
+                        "value": 78
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "Last Updated",
+                      "scope": "series"
+                    },
+                    "properties": [
+                      {
+                        "id": "unit",
+                        "value": "dateTimeAsIso"
+                      },
+                      {
+                        "id": "custom.width",
+                        "value": 179
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "environment_id",
+                      "scope": "series"
+                    },
+                    "properties": [
+                      {
+                        "id": "custom.width",
+                        "value": 137
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "Default Limit",
+                      "scope": "series"
+                    },
+                    "properties": [
+                      {
+                        "id": "custom.width",
+                        "value": 67
+                      }
+                    ]
+                  }
+                ]
+              },
+              "options": {
+                "cellHeight": "sm",
+                "enablePagination": false,
+                "showHeader": true,
+                "sortBy": []
+              }
+            },
+            "version": "13.2.2"
+          }
+        }
+      },
+      "panel-4": {
+        "kind": "Panel",
+        "spec": {
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "hidden": false,
+                    "query": {
+                      "datasource": {
+                        "name": "PBFA97CFB590B2093"
+                      },
+                      "group": "prometheus",
+                      "kind": "DataQuery",
+                      "spec": {
+                        "editorMode": "builder",
+                        "exemplar": false,
+                        "expr": "confluent_cloud_service_quota_default_limit_network{organization_id=~\"$organization_id\", environment_id=~\"$environment_id\", network_id=~\"$network_id\"}",
+                        "instant": true,
+                        "legendFormat": "__auto",
+                        "range": false
+                      },
+                      "version": "v0"
+                    },
+                    "refId": "A"
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "hidden": false,
+                    "query": {
+                      "datasource": {
+                        "name": "PBFA97CFB590B2093"
+                      },
+                      "group": "prometheus",
+                      "kind": "DataQuery",
+                      "spec": {
+                        "editorMode": "builder",
+                        "exemplar": false,
+                        "expr": "confluent_cloud_service_quota_applied_limit_network{organization_id=~\"$organization_id\", environment_id=~\"$environment_id\", network_id=~\"$network_id\"}",
+                        "instant": true,
+                        "legendFormat": "__auto",
+                        "range": false
+                      },
+                      "version": "v0"
+                    },
+                    "refId": "B"
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "hidden": false,
+                    "query": {
+                      "datasource": {
+                        "name": "PBFA97CFB590B2093"
+                      },
+                      "group": "prometheus",
+                      "kind": "DataQuery",
+                      "spec": {
+                        "editorMode": "builder",
+                        "exemplar": false,
+                        "expr": "confluent_cloud_service_quota_usage_network{organization_id=~\"$organization_id\", environment_id=~\"$environment_id\", network_id=~\"$network_id\"}",
+                        "instant": true,
+                        "legendFormat": "__auto",
+                        "range": false
+                      },
+                      "version": "v0"
+                    },
+                    "refId": "C"
+                  }
+                }
+              ],
+              "queryOptions": {},
+              "transformations": [
+                {
+                  "group": "labelsToFields",
+                  "kind": "Transformation",
+                  "spec": {
+                    "options": {
+                      "keepLabels": [
+                        "quota_id",
+                        "organization_id",
+                        "environment_id",
+                        "network_id"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "group": "merge",
+                  "kind": "Transformation",
+                  "spec": {
+                    "options": {}
+                  }
+                },
+                {
+                  "group": "convertFieldType",
+                  "kind": "Transformation",
+                  "spec": {
+                    "options": {
+                      "conversions": [
+                        {
+                          "destinationType": "number",
+                          "targetField": "confluent_cloud_service_quota_default_limit_network"
+                        },
+                        {
+                          "destinationType": "number",
+                          "targetField": "confluent_cloud_service_quota_applied_limit_network"
+                        },
+                        {
+                          "destinationType": "number",
+                          "targetField": "confluent_cloud_service_quota_usage_network"
+                        }
+                      ],
+                      "fields": {}
+                    }
+                  }
+                },
+                {
+                  "group": "groupBy",
+                  "kind": "Transformation",
+                  "spec": {
+                    "options": {
+                      "fields": {
+                        "Applied Limit": {
+                          "aggregations": [
+                            "last"
+                          ],
+                          "operation": "aggregate"
+                        },
+                        "Default Limit": {
+                          "aggregations": [
+                            "last"
+                          ],
+                          "operation": "aggregate"
+                        },
+                        "Time": {
+                          "aggregations": [
+                            "last"
+                          ],
+                          "operation": "aggregate"
+                        },
+                        "Usage": {
+                          "aggregations": [
+                            "last"
+                          ],
+                          "operation": "aggregate"
+                        },
+                        "Usage [%]": {
+                          "aggregations": [
+                            "last"
+                          ],
+                          "operation": "aggregate"
+                        },
+                        "confluent_cloud_service_quota_applied_limit_environment": {
+                          "aggregations": [
+                            "last"
+                          ],
+                          "operation": "aggregate"
+                        },
+                        "confluent_cloud_service_quota_applied_limit_network": {
+                          "aggregations": [
+                            "last"
+                          ],
+                          "operation": "aggregate"
+                        },
+                        "confluent_cloud_service_quota_applied_limit_organization": {
+                          "aggregations": [
+                            "last"
+                          ],
+                          "operation": "aggregate"
+                        },
+                        "confluent_cloud_service_quota_default_limit_environment": {
+                          "aggregations": [
+                            "last"
+                          ],
+                          "operation": "aggregate"
+                        },
+                        "confluent_cloud_service_quota_default_limit_network": {
+                          "aggregations": [
+                            "last"
+                          ],
+                          "operation": "aggregate"
+                        },
+                        "confluent_cloud_service_quota_default_limit_organization": {
+                          "aggregations": [
+                            "last"
+                          ],
+                          "operation": "aggregate"
+                        },
+                        "confluent_cloud_service_quota_usage_environment": {
+                          "aggregations": [
+                            "last"
+                          ],
+                          "operation": "aggregate"
+                        },
+                        "confluent_cloud_service_quota_usage_network": {
+                          "aggregations": [
+                            "last"
+                          ],
+                          "operation": "aggregate"
+                        },
+                        "confluent_cloud_service_quota_usage_organization": {
+                          "aggregations": [
+                            "last"
+                          ],
+                          "operation": "aggregate"
+                        },
+                        "environment_id": {
+                          "aggregations": [],
+                          "operation": "groupby"
+                        },
+                        "network_id": {
+                          "aggregations": [],
+                          "operation": "groupby"
+                        },
+                        "organization_id": {
+                          "aggregations": [],
+                          "operation": "groupby"
+                        },
+                        "quota_id": {
+                          "aggregations": [],
+                          "operation": "groupby"
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "group": "calculateField",
+                  "kind": "Transformation",
+                  "spec": {
+                    "options": {
+                      "alias": "Usage [%]",
+                      "binary": {
+                        "left": {
+                          "matcher": {
+                            "id": "byName",
+                            "options": "confluent_cloud_service_quota_usage_network (last)"
+                          }
+                        },
+                        "operator": "/",
+                        "right": {
+                          "matcher": {
+                            "id": "byName",
+                            "options": "confluent_cloud_service_quota_applied_limit_network (last)"
+                          }
+                        }
+                      },
+                      "mode": "binary",
+                      "reduce": {
+                        "reducer": "sum"
+                      }
+                    }
+                  }
+                },
+                {
+                  "group": "organize",
+                  "kind": "Transformation",
+                  "spec": {
+                    "options": {
+                      "excludeByName": {},
+                      "includeByName": {},
+                      "indexByName": {
+                        "Time (last)": 8,
+                        "Usage [%]": 4,
+                        "confluent_cloud_service_quota_applied_limit_network (last)": 6,
+                        "confluent_cloud_service_quota_default_limit_network (last)": 7,
+                        "confluent_cloud_service_quota_usage_network (last)": 5,
+                        "environment_id": 2,
+                        "network_id": 3,
+                        "organization_id": 1,
+                        "quota_id": 0
+                      },
+                      "renameByName": {
+                        "Time (last)": "Last Updated",
+                        "confluent_cloud_service_quota_applied_limit_environment (last)": "Applied Limit",
+                        "confluent_cloud_service_quota_applied_limit_network (last)": "Applied Limit",
+                        "confluent_cloud_service_quota_applied_limit_organization": "Applied Limit",
+                        "confluent_cloud_service_quota_applied_limit_organization (last)": "Applied Limit",
+                        "confluent_cloud_service_quota_default_limit_environment (last)": "(Default Limit)",
+                        "confluent_cloud_service_quota_default_limit_network (last)": "(Default Limit)",
+                        "confluent_cloud_service_quota_default_limit_organization": "Default Limit",
+                        "confluent_cloud_service_quota_default_limit_organization (last)": "(Default Limit)",
+                        "confluent_cloud_service_quota_usage_environment (last)": "Usage",
+                        "confluent_cloud_service_quota_usage_network (last)": "Usage",
+                        "confluent_cloud_service_quota_usage_organization": "Usage",
+                        "confluent_cloud_service_quota_usage_organization (last)": "Usage",
+                        "organization_id": ""
+                      }
+                    }
+                  }
+                },
+                {
+                  "group": "sortBy",
+                  "kind": "Transformation",
+                  "spec": {
+                    "options": {
+                      "fields": {},
+                      "sort": [
+                        {
+                          "desc": true,
+                          "field": "Usage [%]"
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "description": "",
+          "id": 4,
+          "links": [],
+          "title": "Network Service Quotas",
+          "vizConfig": {
+            "group": "table",
+            "kind": "VizConfig",
+            "spec": {
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "thresholds"
+                  },
+                  "custom": {
+                    "align": "auto",
+                    "cellOptions": {
+                      "type": "auto"
+                    },
+                    "footer": {
+                      "reducers": []
+                    },
+                    "inspect": false,
+                    "wrapHeaderText": false,
+                    "wrapText": false
+                  },
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  }
+                },
+                "overrides": [
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "Usage [%]",
+                      "scope": "series"
+                    },
+                    "properties": [
+                      {
+                        "id": "unit",
+                        "value": "percentunit"
+                      },
+                      {
+                        "id": "custom.width",
+                        "value": 94
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "Usage [%]",
+                      "scope": "series"
+                    },
+                    "properties": [
+                      {
+                        "id": "thresholds",
+                        "value": {
+                          "mode": "absolute",
+                          "steps": [
+                            {
+                              "color": "green",
+                              "value": 0
+                            },
+                            {
+                              "color": "#EAB839",
+                              "value": 0.8
+                            },
+                            {
+                              "color": "red",
+                              "value": 0.9
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "id": "custom.cellOptions",
+                        "value": {
+                          "applyToRow": false,
+                          "mode": "gradient",
+                          "type": "color-background"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "quota_id",
+                      "scope": "series"
+                    },
+                    "properties": []
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "organization_id",
+                      "scope": "series"
+                    },
+                    "properties": []
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "Applied Limit",
+                      "scope": "series"
+                    },
+                    "properties": [
+                      {
+                        "id": "custom.width",
+                        "value": 105
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "(Default Limit)",
+                      "scope": "series"
+                    },
+                    "properties": [
+                      {
+                        "id": "custom.width",
+                        "value": 114
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "Usage",
+                      "scope": "series"
+                    },
+                    "properties": [
+                      {
+                        "id": "custom.width",
+                        "value": 78
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "Last Updated",
+                      "scope": "series"
+                    },
+                    "properties": [
+                      {
+                        "id": "unit",
+                        "value": "dateTimeAsIso"
+                      },
+                      {
+                        "id": "custom.width",
+                        "value": 179
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "environment_id",
+                      "scope": "series"
+                    },
+                    "properties": [
+                      {
+                        "id": "custom.width",
+                        "value": 137
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "Default Limit",
+                      "scope": "series"
+                    },
+                    "properties": [
+                      {
+                        "id": "custom.width",
+                        "value": 67
+                      }
+                    ]
+                  }
+                ]
+              },
+              "options": {
+                "cellHeight": "sm",
+                "enablePagination": false,
+                "showHeader": true
+              }
+            },
+            "version": "13.2.2"
+          }
+        }
+      },
+      "panel-5": {
+        "kind": "Panel",
+        "spec": {
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "hidden": false,
+                    "query": {
+                      "datasource": {
+                        "name": "PBFA97CFB590B2093"
+                      },
+                      "group": "prometheus",
+                      "kind": "DataQuery",
+                      "spec": {
+                        "editorMode": "builder",
+                        "exemplar": false,
+                        "expr": "confluent_cloud_service_quota_default_limit_kafka_cluster{organization_id=~\"$organization_id\", environment_id=~\"$environment_id\", kafka_cluster=~\"$kafka_cluster\"}",
+                        "instant": true,
+                        "legendFormat": "__auto",
+                        "range": false
+                      },
+                      "version": "v0"
+                    },
+                    "refId": "A"
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "hidden": false,
+                    "query": {
+                      "datasource": {
+                        "name": "PBFA97CFB590B2093"
+                      },
+                      "group": "prometheus",
+                      "kind": "DataQuery",
+                      "spec": {
+                        "editorMode": "builder",
+                        "exemplar": false,
+                        "expr": "confluent_cloud_service_quota_applied_limit_kafka_cluster{organization_id=~\"$organization_id\", environment_id=~\"$environment_id\", kafka_cluster=~\"$kafka_cluster\"}",
+                        "instant": true,
+                        "legendFormat": "__auto",
+                        "range": false
+                      },
+                      "version": "v0"
+                    },
+                    "refId": "B"
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "hidden": false,
+                    "query": {
+                      "datasource": {
+                        "name": "PBFA97CFB590B2093"
+                      },
+                      "group": "prometheus",
+                      "kind": "DataQuery",
+                      "spec": {
+                        "editorMode": "builder",
+                        "exemplar": false,
+                        "expr": "confluent_cloud_service_quota_usage_kafka_cluster{organization_id=~\"$organization_id\", environment_id=~\"$environment_id\", kafka_cluster=~\"$kafka_cluster\"}",
+                        "instant": true,
+                        "legendFormat": "__auto",
+                        "range": false
+                      },
+                      "version": "v0"
+                    },
+                    "refId": "C"
+                  }
+                }
+              ],
+              "queryOptions": {},
+              "transformations": [
+                {
+                  "group": "labelsToFields",
+                  "kind": "Transformation",
+                  "spec": {
+                    "options": {
+                      "keepLabels": [
+                        "quota_id",
+                        "organization_id",
+                        "environment_id",
+                        "network_id",
+                        "kafka_cluster"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "group": "merge",
+                  "kind": "Transformation",
+                  "spec": {
+                    "options": {}
+                  }
+                },
+                {
+                  "group": "convertFieldType",
+                  "kind": "Transformation",
+                  "spec": {
+                    "options": {
+                      "conversions": [
+                        {
+                          "destinationType": "number",
+                          "targetField": "confluent_cloud_service_quota_default_limit_kafka_cluster"
+                        },
+                        {
+                          "destinationType": "number",
+                          "targetField": "confluent_cloud_service_quota_applied_limit_kafka_cluster"
+                        },
+                        {
+                          "destinationType": "number",
+                          "targetField": "confluent_cloud_service_quota_usage_kafka_cluster"
+                        }
+                      ],
+                      "fields": {}
+                    }
+                  }
+                },
+                {
+                  "group": "groupBy",
+                  "kind": "Transformation",
+                  "spec": {
+                    "options": {
+                      "fields": {
+                        "Applied Limit": {
+                          "aggregations": [
+                            "last"
+                          ],
+                          "operation": "aggregate"
+                        },
+                        "Default Limit": {
+                          "aggregations": [
+                            "last"
+                          ],
+                          "operation": "aggregate"
+                        },
+                        "Time": {
+                          "aggregations": [
+                            "last"
+                          ],
+                          "operation": "aggregate"
+                        },
+                        "Usage": {
+                          "aggregations": [
+                            "last"
+                          ],
+                          "operation": "aggregate"
+                        },
+                        "Usage [%]": {
+                          "aggregations": [
+                            "last"
+                          ],
+                          "operation": "aggregate"
+                        },
+                        "confluent_cloud_service_quota_applied_limit_environment": {
+                          "aggregations": [
+                            "last"
+                          ],
+                          "operation": "aggregate"
+                        },
+                        "confluent_cloud_service_quota_applied_limit_kafka_cluster": {
+                          "aggregations": [
+                            "last"
+                          ],
+                          "operation": "aggregate"
+                        },
+                        "confluent_cloud_service_quota_applied_limit_network": {
+                          "aggregations": [
+                            "last"
+                          ],
+                          "operation": "aggregate"
+                        },
+                        "confluent_cloud_service_quota_applied_limit_organization": {
+                          "aggregations": [
+                            "last"
+                          ],
+                          "operation": "aggregate"
+                        },
+                        "confluent_cloud_service_quota_default_limit_environment": {
+                          "aggregations": [
+                            "last"
+                          ],
+                          "operation": "aggregate"
+                        },
+                        "confluent_cloud_service_quota_default_limit_kafka_cluster": {
+                          "aggregations": [
+                            "last"
+                          ],
+                          "operation": "aggregate"
+                        },
+                        "confluent_cloud_service_quota_default_limit_network": {
+                          "aggregations": [
+                            "last"
+                          ],
+                          "operation": "aggregate"
+                        },
+                        "confluent_cloud_service_quota_default_limit_organization": {
+                          "aggregations": [
+                            "last"
+                          ],
+                          "operation": "aggregate"
+                        },
+                        "confluent_cloud_service_quota_usage_environment": {
+                          "aggregations": [
+                            "last"
+                          ],
+                          "operation": "aggregate"
+                        },
+                        "confluent_cloud_service_quota_usage_kafka_cluster": {
+                          "aggregations": [
+                            "last"
+                          ],
+                          "operation": "aggregate"
+                        },
+                        "confluent_cloud_service_quota_usage_network": {
+                          "aggregations": [
+                            "last"
+                          ],
+                          "operation": "aggregate"
+                        },
+                        "confluent_cloud_service_quota_usage_organization": {
+                          "aggregations": [
+                            "last"
+                          ],
+                          "operation": "aggregate"
+                        },
+                        "environment_id": {
+                          "aggregations": [],
+                          "operation": "groupby"
+                        },
+                        "kafka_cluster": {
+                          "aggregations": [],
+                          "operation": "groupby"
+                        },
+                        "network_id": {
+                          "aggregations": [],
+                          "operation": "groupby"
+                        },
+                        "organization_id": {
+                          "aggregations": [],
+                          "operation": "groupby"
+                        },
+                        "quota_id": {
+                          "aggregations": [],
+                          "operation": "groupby"
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "group": "calculateField",
+                  "kind": "Transformation",
+                  "spec": {
+                    "options": {
+                      "alias": "Usage [%]",
+                      "binary": {
+                        "left": {
+                          "matcher": {
+                            "id": "byName",
+                            "options": "confluent_cloud_service_quota_usage_kafka_cluster (last)"
+                          }
+                        },
+                        "operator": "/",
+                        "right": {
+                          "matcher": {
+                            "id": "byName",
+                            "options": "confluent_cloud_service_quota_applied_limit_kafka_cluster (last)"
+                          }
+                        }
+                      },
+                      "mode": "binary",
+                      "reduce": {
+                        "reducer": "sum"
+                      }
+                    }
+                  }
+                },
+                {
+                  "group": "organize",
+                  "kind": "Transformation",
+                  "spec": {
+                    "options": {
+                      "excludeByName": {},
+                      "includeByName": {},
+                      "indexByName": {
+                        "Time (last)": 8,
+                        "Usage [%]": 4,
+                        "confluent_cloud_service_quota_applied_limit_kafka_cluster (last)": 6,
+                        "confluent_cloud_service_quota_default_limit_kafka_cluster (last)": 7,
+                        "confluent_cloud_service_quota_usage_kafka_cluster (last)": 5,
+                        "environment_id": 2,
+                        "kafka_cluster": 3,
+                        "organization_id": 1,
+                        "quota_id": 0
+                      },
+                      "renameByName": {
+                        "Time (last)": "Last Updated",
+                        "confluent_cloud_service_quota_applied_limit_environment (last)": "Applied Limit",
+                        "confluent_cloud_service_quota_applied_limit_kafka_cluster (last)": "Applied Limit",
+                        "confluent_cloud_service_quota_applied_limit_network (last)": "Applied Limit",
+                        "confluent_cloud_service_quota_applied_limit_organization": "Applied Limit",
+                        "confluent_cloud_service_quota_applied_limit_organization (last)": "Applied Limit",
+                        "confluent_cloud_service_quota_default_limit_environment (last)": "(Default Limit)",
+                        "confluent_cloud_service_quota_default_limit_kafka_cluster (last)": "(Default Limit)",
+                        "confluent_cloud_service_quota_default_limit_network (last)": "(Default Limit)",
+                        "confluent_cloud_service_quota_default_limit_organization": "Default Limit",
+                        "confluent_cloud_service_quota_default_limit_organization (last)": "(Default Limit)",
+                        "confluent_cloud_service_quota_usage_environment (last)": "Usage",
+                        "confluent_cloud_service_quota_usage_kafka_cluster (last)": "Usage",
+                        "confluent_cloud_service_quota_usage_network (last)": "Usage",
+                        "confluent_cloud_service_quota_usage_organization": "Usage",
+                        "confluent_cloud_service_quota_usage_organization (last)": "Usage",
+                        "organization_id": ""
+                      }
+                    }
+                  }
+                },
+                {
+                  "group": "sortBy",
+                  "kind": "Transformation",
+                  "spec": {
+                    "options": {
+                      "fields": {},
+                      "sort": [
+                        {
+                          "desc": true,
+                          "field": "Usage [%]"
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "description": "",
+          "id": 5,
+          "links": [],
+          "title": "Kafka Cluster Service Quotas",
+          "vizConfig": {
+            "group": "table",
+            "kind": "VizConfig",
+            "spec": {
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "thresholds"
+                  },
+                  "custom": {
+                    "align": "auto",
+                    "cellOptions": {
+                      "type": "auto"
+                    },
+                    "footer": {
+                      "reducers": []
+                    },
+                    "inspect": false,
+                    "wrapHeaderText": false,
+                    "wrapText": false
+                  },
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  }
+                },
+                "overrides": [
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "Usage [%]",
+                      "scope": "series"
+                    },
+                    "properties": [
+                      {
+                        "id": "unit",
+                        "value": "percentunit"
+                      },
+                      {
+                        "id": "custom.width",
+                        "value": 94
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "Usage [%]",
+                      "scope": "series"
+                    },
+                    "properties": [
+                      {
+                        "id": "thresholds",
+                        "value": {
+                          "mode": "absolute",
+                          "steps": [
+                            {
+                              "color": "green",
+                              "value": 0
+                            },
+                            {
+                              "color": "#EAB839",
+                              "value": 0.8
+                            },
+                            {
+                              "color": "red",
+                              "value": 0.9
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "id": "custom.cellOptions",
+                        "value": {
+                          "applyToRow": false,
+                          "mode": "gradient",
+                          "type": "color-background"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "quota_id",
+                      "scope": "series"
+                    },
+                    "properties": []
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "organization_id",
+                      "scope": "series"
+                    },
+                    "properties": []
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "Applied Limit",
+                      "scope": "series"
+                    },
+                    "properties": [
+                      {
+                        "id": "custom.width",
+                        "value": 105
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "(Default Limit)",
+                      "scope": "series"
+                    },
+                    "properties": [
+                      {
+                        "id": "custom.width",
+                        "value": 114
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "Usage",
+                      "scope": "series"
+                    },
+                    "properties": [
+                      {
+                        "id": "custom.width",
+                        "value": 78
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "Last Updated",
+                      "scope": "series"
+                    },
+                    "properties": [
+                      {
+                        "id": "unit",
+                        "value": "dateTimeAsIso"
+                      },
+                      {
+                        "id": "custom.width",
+                        "value": 179
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "environment_id",
+                      "scope": "series"
+                    },
+                    "properties": [
+                      {
+                        "id": "custom.width",
+                        "value": 137
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "Default Limit",
+                      "scope": "series"
+                    },
+                    "properties": [
+                      {
+                        "id": "custom.width",
+                        "value": 67
                       }
                     ]
                   }
@@ -570,7 +2063,7 @@
           {
             "kind": "RowsLayoutRow",
             "spec": {
-              "collapse": false,
+              "collapse": true,
               "layout": {
                 "kind": "AutoGridLayout",
                 "spec": {
@@ -581,7 +2074,7 @@
                       "spec": {
                         "element": {
                           "kind": "ElementReference",
-                          "name": "panel-2"
+                          "name": "panel-3"
                         }
                       }
                     }
@@ -591,6 +2084,58 @@
                 }
               },
               "title": "Environments"
+            }
+          },
+          {
+            "kind": "RowsLayoutRow",
+            "spec": {
+              "collapse": true,
+              "layout": {
+                "kind": "AutoGridLayout",
+                "spec": {
+                  "columnWidthMode": "standard",
+                  "items": [
+                    {
+                      "kind": "AutoGridLayoutItem",
+                      "spec": {
+                        "element": {
+                          "kind": "ElementReference",
+                          "name": "panel-4"
+                        }
+                      }
+                    }
+                  ],
+                  "maxColumnCount": 3,
+                  "rowHeightMode": "standard"
+                }
+              },
+              "title": "Networks"
+            }
+          },
+          {
+            "kind": "RowsLayoutRow",
+            "spec": {
+              "collapse": true,
+              "layout": {
+                "kind": "AutoGridLayout",
+                "spec": {
+                  "columnWidthMode": "standard",
+                  "items": [
+                    {
+                      "kind": "AutoGridLayoutItem",
+                      "spec": {
+                        "element": {
+                          "kind": "ElementReference",
+                          "name": "panel-5"
+                        }
+                      }
+                    }
+                  ],
+                  "maxColumnCount": 3,
+                  "rowHeightMode": "standard"
+                }
+              },
+              "title": "Kafka Clusters"
             }
           }
         ]
