@@ -489,7 +489,7 @@
                       "spec": {
                         "editorMode": "builder",
                         "exemplar": false,
-                        "expr": "confluent_cloud_service_quota_default_limit_environment{organization_id=~\"$organization_id\", environment_id=~\"$environment\", quota_id=~\"$quota\"}",
+                        "expr": "confluent_cloud_service_quota_default_limit_environment{organization_id=~\"$organization\", environment_id=~\"$environment\", quota_id=~\"$quota\"}",
                         "instant": true,
                         "legendFormat": "__auto",
                         "range": false
@@ -2439,7 +2439,7 @@
             "text": "All",
             "value": "$__all"
           },
-          "definition": "label_values(confluent_cloud_service_quota_applied_limit_kafka_cluster{organization_id=~\"$organization_id\"},environment_id)",
+          "definition": "label_values(confluent_cloud_service_quota_applied_limit_kafka_cluster{organization_id=~\"$organization\"},environment_id)",
           "hide": "dontHide",
           "includeAll": true,
           "multi": false,
@@ -2453,7 +2453,7 @@
             "kind": "DataQuery",
             "spec": {
               "qryType": 1,
-              "query": "label_values(confluent_cloud_service_quota_applied_limit_kafka_cluster{organization_id=~\"$organization_id\"},environment_id)",
+              "query": "label_values(confluent_cloud_service_quota_applied_limit_kafka_cluster{organization_id=~\"$organization\"},environment_id)",
               "refId": "PrometheusVariableQueryEditor-VariableQuery"
             },
             "version": "v0"
