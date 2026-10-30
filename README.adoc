@@ -6,11 +6,15 @@ Please have a look at this article for details: https://www.confluent.io/blog/br
 == Preconditions
 
 In your Confluent Cloud organization, create an API key, assign it to a service account and grant `MetricsViewer" permissions.
-Customize the Prometheus configuration file template `docker/prometheus/prometheus.yml-template` and copy it to `docker/prometheus/prometheus.yml`.
+Customize the Prometheus configuration file template `docker/prometheus/prometheus-confluent-cloud-service-quota-exporter-template.yml` and copy it to `docker/prometheus/prometheus.yml`.
+Configure the experimental Confluent Cloud Quota API export, by going into the folder `python`, copy the file `example-config.yaml` to `config.yaml` and customize it (optionally, the code will use the API Key specified in your .env file by default).
+
+Optional: If you want to try the kafka-exporter, copy the .env-template to .env and customize it.
+
+Note: We also provide an alternative file called `prometheus-json-exporter-template.yml` which uses json_exporter for querying the Quota API. However, this exporter misses important features, such as support for paginated results.
 
 == Running Prometheus
 
-If you want to try the kafka-exporter, copy the .env-template to .env and customize it.
 Then enable the docker compose profile by setting:
 
 ```console
