@@ -49,7 +49,7 @@
                       "spec": {
                         "editorMode": "builder",
                         "exemplar": false,
-                        "expr": "confluent_cloud_service_quota_default_limit_organization{organization_id=~\"$organization_id\"}",
+                        "expr": "confluent_cloud_service_quota_default_limit_organization{organization_id=~\"$organization_id|$organization\", quota_id=~\"$quota\"}",
                         "instant": true,
                         "legendFormat": "__auto",
                         "range": false
@@ -72,7 +72,7 @@
                       "spec": {
                         "editorMode": "builder",
                         "exemplar": false,
-                        "expr": "confluent_cloud_service_quota_applied_limit_organization{organization_id=~\"$organization_id\"}",
+                        "expr": "confluent_cloud_service_quota_applied_limit_organization{organization_id=~\"$organization_id|$organization\", quota_id=~\"$quota\"}",
                         "instant": true,
                         "legendFormat": "__auto",
                         "range": false
@@ -95,7 +95,7 @@
                       "spec": {
                         "editorMode": "builder",
                         "exemplar": false,
-                        "expr": "confluent_cloud_service_quota_usage_organization{organization_id=~\"$organization_id\"}",
+                        "expr": "confluent_cloud_service_quota_usage_organization{organization_id=~\"$organization\", quota_id=~\"$quota\"}",
                         "instant": true,
                         "legendFormat": "__auto",
                         "range": false
@@ -489,7 +489,7 @@
                       "spec": {
                         "editorMode": "builder",
                         "exemplar": false,
-                        "expr": "confluent_cloud_service_quota_default_limit_environment{organization_id=~\"$organization_id\", environment_id=~\"$environment_id\"}",
+                        "expr": "confluent_cloud_service_quota_default_limit_environment{organization_id=~\"$organization_id\", environment_id=~\"$environment\", quota_id=~\"$quota\"}",
                         "instant": true,
                         "legendFormat": "__auto",
                         "range": false
@@ -512,7 +512,7 @@
                       "spec": {
                         "editorMode": "builder",
                         "exemplar": false,
-                        "expr": "confluent_cloud_service_quota_applied_limit_environment{organization_id=~\"$organization_id\", environment_id=~\"$environment_id\"}",
+                        "expr": "confluent_cloud_service_quota_applied_limit_environment{organization_id=~\"$organization\", environment_id=~\"$environment\", quota_id=~\"$quota\"}",
                         "instant": true,
                         "legendFormat": "__auto",
                         "range": false
@@ -535,7 +535,7 @@
                       "spec": {
                         "editorMode": "builder",
                         "exemplar": false,
-                        "expr": "confluent_cloud_service_quota_usage_environment{organization_id=~\"$organization_id\", environment_id=~\"$environment_id\"}",
+                        "expr": "confluent_cloud_service_quota_usage_environment{organization_id=~\"$organization\", environment_id=~\"$environment\", quota_id=~\"$quota\"}",
                         "instant": true,
                         "legendFormat": "__auto",
                         "range": false
@@ -983,7 +983,7 @@
                       "spec": {
                         "editorMode": "builder",
                         "exemplar": false,
-                        "expr": "confluent_cloud_service_quota_default_limit_network{organization_id=~\"$organization_id\", environment_id=~\"$environment_id\", network_id=~\"$network_id\"}",
+                        "expr": "confluent_cloud_service_quota_default_limit_network{organization_id=~\"$organization\", environment_id=~\"$environment\", network_id=~\"$network\", quota_id=~\"$quota\"}",
                         "instant": true,
                         "legendFormat": "__auto",
                         "range": false
@@ -1006,7 +1006,7 @@
                       "spec": {
                         "editorMode": "builder",
                         "exemplar": false,
-                        "expr": "confluent_cloud_service_quota_applied_limit_network{organization_id=~\"$organization_id\", environment_id=~\"$environment_id\", network_id=~\"$network_id\"}",
+                        "expr": "confluent_cloud_service_quota_applied_limit_network{organization_id=~\"$organization\", environment_id=~\"$environment\", network_id=~\"$network\", quota_id=~\"$quota\"}",
                         "instant": true,
                         "legendFormat": "__auto",
                         "range": false
@@ -1029,7 +1029,7 @@
                       "spec": {
                         "editorMode": "builder",
                         "exemplar": false,
-                        "expr": "confluent_cloud_service_quota_usage_network{organization_id=~\"$organization_id\", environment_id=~\"$environment_id\", network_id=~\"$network_id\"}",
+                        "expr": "confluent_cloud_service_quota_usage_network{organization_id=~\"$organization\", environment_id=~\"$environment\", network_id=~\"$network\", quota_id=~\"$quota\"}",
                         "instant": true,
                         "legendFormat": "__auto",
                         "range": false
@@ -1476,7 +1476,13 @@
               "options": {
                 "cellHeight": "sm",
                 "enablePagination": false,
-                "showHeader": true
+                "showHeader": true,
+                "sortBy": [
+                  {
+                    "desc": true,
+                    "displayName": "Usage [%]"
+                  }
+                ]
               }
             },
             "version": "13.2.2"
@@ -1503,7 +1509,7 @@
                       "spec": {
                         "editorMode": "builder",
                         "exemplar": false,
-                        "expr": "confluent_cloud_service_quota_default_limit_kafka_cluster{organization_id=~\"$organization_id\", environment_id=~\"$environment_id\", kafka_cluster=~\"$kafka_cluster\"}",
+                        "expr": "confluent_cloud_service_quota_default_limit_kafka_cluster{organization_id=~\"$organization\", environment_id=~\"$environment\", kafka_cluster=~\"$kafka_cluster\", quota_id=~\"$quota\"}",
                         "instant": true,
                         "legendFormat": "__auto",
                         "range": false
@@ -1526,7 +1532,7 @@
                       "spec": {
                         "editorMode": "builder",
                         "exemplar": false,
-                        "expr": "confluent_cloud_service_quota_applied_limit_kafka_cluster{organization_id=~\"$organization_id\", environment_id=~\"$environment_id\", kafka_cluster=~\"$kafka_cluster\"}",
+                        "expr": "confluent_cloud_service_quota_applied_limit_kafka_cluster{organization_id=~\"$organization\", environment_id=~\"$environment\", kafka_cluster=~\"$kafka_cluster\", quota_id=~\"$quota\"}",
                         "instant": true,
                         "legendFormat": "__auto",
                         "range": false
@@ -1549,7 +1555,7 @@
                       "spec": {
                         "editorMode": "builder",
                         "exemplar": false,
-                        "expr": "confluent_cloud_service_quota_usage_kafka_cluster{organization_id=~\"$organization_id\", environment_id=~\"$environment_id\", kafka_cluster=~\"$kafka_cluster\"}",
+                        "expr": "confluent_cloud_service_quota_usage_kafka_cluster{organization_id=~\"$organization\", environment_id=~\"$environment\", kafka_cluster=~\"$kafka_cluster\", quota_id=~\"$quota\"}",
                         "instant": true,
                         "legendFormat": "__auto",
                         "range": false
@@ -2037,7 +2043,7 @@
           {
             "kind": "RowsLayoutRow",
             "spec": {
-              "collapse": false,
+              "collapse": true,
               "layout": {
                 "kind": "AutoGridLayout",
                 "spec": {
@@ -2057,13 +2063,50 @@
                   "rowHeightMode": "standard"
                 }
               },
-              "title": "Organizations"
+              "title": "Organizations",
+              "variables": [
+                {
+                  "kind": "QueryVariable",
+                  "spec": {
+                    "allowCustomValue": true,
+                    "current": {
+                      "text": "All",
+                      "value": "$__all"
+                    },
+                    "definition": "label_values(confluent_cloud_service_quota_applied_limit_organization,quota_id)",
+                    "hide": "dontHide",
+                    "includeAll": true,
+                    "multi": false,
+                    "name": "quota",
+                    "options": [],
+                    "query": {
+                      "datasource": {
+                        "name": "PBFA97CFB590B2093"
+                      },
+                      "group": "prometheus",
+                      "kind": "DataQuery",
+                      "spec": {
+                        "qryType": 1,
+                        "query": "label_values(confluent_cloud_service_quota_applied_limit_organization,quota_id)",
+                        "refId": "PrometheusVariableQueryEditor-VariableQuery"
+                      },
+                      "version": "v0"
+                    },
+                    "refresh": "onDashboardLoad",
+                    "regex": "",
+                    "regexApplyTo": "value",
+                    "skipUrlSync": false,
+                    "sort": "disabled"
+                  }
+                }
+              ]
             }
           },
           {
             "kind": "RowsLayoutRow",
             "spec": {
               "collapse": true,
+              "hideHeader": false,
               "layout": {
                 "kind": "AutoGridLayout",
                 "spec": {
@@ -2083,7 +2126,43 @@
                   "rowHeightMode": "standard"
                 }
               },
-              "title": "Environments"
+              "title": "Environments",
+              "variables": [
+                {
+                  "kind": "QueryVariable",
+                  "spec": {
+                    "allowCustomValue": true,
+                    "current": {
+                      "text": "All",
+                      "value": "$__all"
+                    },
+                    "definition": "label_values(confluent_cloud_service_quota_applied_limit_environment,quota_id)",
+                    "hide": "dontHide",
+                    "includeAll": true,
+                    "multi": false,
+                    "name": "quota",
+                    "options": [],
+                    "query": {
+                      "datasource": {
+                        "name": "PBFA97CFB590B2093"
+                      },
+                      "group": "prometheus",
+                      "kind": "DataQuery",
+                      "spec": {
+                        "qryType": 1,
+                        "query": "label_values(confluent_cloud_service_quota_applied_limit_environment,quota_id)",
+                        "refId": "PrometheusVariableQueryEditor-VariableQuery"
+                      },
+                      "version": "v0"
+                    },
+                    "refresh": "onDashboardLoad",
+                    "regex": "",
+                    "regexApplyTo": "value",
+                    "skipUrlSync": false,
+                    "sort": "disabled"
+                  }
+                }
+              ]
             }
           },
           {
@@ -2109,7 +2188,77 @@
                   "rowHeightMode": "standard"
                 }
               },
-              "title": "Networks"
+              "title": "Networks",
+              "variables": [
+                {
+                  "kind": "QueryVariable",
+                  "spec": {
+                    "allowCustomValue": true,
+                    "current": {
+                      "text": "All",
+                      "value": "$__all"
+                    },
+                    "definition": "label_values(confluent_cloud_service_quota_applied_limit_network,quota_id)",
+                    "hide": "dontHide",
+                    "includeAll": true,
+                    "multi": false,
+                    "name": "quota",
+                    "options": [],
+                    "query": {
+                      "datasource": {
+                        "name": "PBFA97CFB590B2093"
+                      },
+                      "group": "prometheus",
+                      "kind": "DataQuery",
+                      "spec": {
+                        "qryType": 1,
+                        "query": "label_values(confluent_cloud_service_quota_applied_limit_network,quota_id)",
+                        "refId": "PrometheusVariableQueryEditor-VariableQuery"
+                      },
+                      "version": "v0"
+                    },
+                    "refresh": "onDashboardLoad",
+                    "regex": "",
+                    "regexApplyTo": "value",
+                    "skipUrlSync": false,
+                    "sort": "disabled"
+                  }
+                },
+                {
+                  "kind": "QueryVariable",
+                  "spec": {
+                    "allowCustomValue": true,
+                    "current": {
+                      "text": "All",
+                      "value": "$__all"
+                    },
+                    "definition": "label_values(confluent_cloud_service_quota_applied_limit_network,network_id)",
+                    "hide": "dontHide",
+                    "includeAll": true,
+                    "multi": false,
+                    "name": "network",
+                    "options": [],
+                    "query": {
+                      "datasource": {
+                        "name": "PBFA97CFB590B2093"
+                      },
+                      "group": "prometheus",
+                      "kind": "DataQuery",
+                      "spec": {
+                        "qryType": 1,
+                        "query": "label_values(confluent_cloud_service_quota_applied_limit_network,network_id)",
+                        "refId": "PrometheusVariableQueryEditor-VariableQuery"
+                      },
+                      "version": "v0"
+                    },
+                    "refresh": "onDashboardLoad",
+                    "regex": "",
+                    "regexApplyTo": "value",
+                    "skipUrlSync": false,
+                    "sort": "disabled"
+                  }
+                }
+              ]
             }
           },
           {
@@ -2135,7 +2284,77 @@
                   "rowHeightMode": "standard"
                 }
               },
-              "title": "Kafka Clusters"
+              "title": "Kafka Clusters",
+              "variables": [
+                {
+                  "kind": "QueryVariable",
+                  "spec": {
+                    "allowCustomValue": true,
+                    "current": {
+                      "text": "All",
+                      "value": "$__all"
+                    },
+                    "definition": "label_values(confluent_cloud_service_quota_applied_limit_kafka_cluster,quota_id)",
+                    "hide": "dontHide",
+                    "includeAll": true,
+                    "multi": false,
+                    "name": "quota",
+                    "options": [],
+                    "query": {
+                      "datasource": {
+                        "name": "PBFA97CFB590B2093"
+                      },
+                      "group": "prometheus",
+                      "kind": "DataQuery",
+                      "spec": {
+                        "qryType": 1,
+                        "query": "label_values(confluent_cloud_service_quota_applied_limit_kafka_cluster,quota_id)",
+                        "refId": "PrometheusVariableQueryEditor-VariableQuery"
+                      },
+                      "version": "v0"
+                    },
+                    "refresh": "onDashboardLoad",
+                    "regex": "",
+                    "regexApplyTo": "value",
+                    "skipUrlSync": false,
+                    "sort": "disabled"
+                  }
+                },
+                {
+                  "kind": "QueryVariable",
+                  "spec": {
+                    "allowCustomValue": true,
+                    "current": {
+                      "text": "All",
+                      "value": "$__all"
+                    },
+                    "definition": "label_values(confluent_cloud_service_quota_applied_limit_kafka_cluster,kafka_cluster)",
+                    "hide": "dontHide",
+                    "includeAll": true,
+                    "multi": false,
+                    "name": "kafka_cluster",
+                    "options": [],
+                    "query": {
+                      "datasource": {
+                        "name": "PBFA97CFB590B2093"
+                      },
+                      "group": "prometheus",
+                      "kind": "DataQuery",
+                      "spec": {
+                        "qryType": 1,
+                        "query": "label_values(confluent_cloud_service_quota_applied_limit_kafka_cluster,kafka_cluster)",
+                        "refId": "PrometheusVariableQueryEditor-VariableQuery"
+                      },
+                      "version": "v0"
+                    },
+                    "refresh": "onDashboardLoad",
+                    "regex": "",
+                    "regexApplyTo": "value",
+                    "skipUrlSync": false,
+                    "sort": "disabled"
+                  }
+                }
+              ]
             }
           }
         ]
@@ -2190,7 +2409,7 @@
           "hide": "dontHide",
           "includeAll": true,
           "multi": false,
-          "name": "organization_id",
+          "name": "organization",
           "options": [],
           "query": {
             "datasource": {
@@ -2224,7 +2443,7 @@
           "hide": "dontHide",
           "includeAll": true,
           "multi": false,
-          "name": "environment_id",
+          "name": "environment",
           "options": [],
           "query": {
             "datasource": {
@@ -2235,74 +2454,6 @@
             "spec": {
               "qryType": 1,
               "query": "label_values(confluent_cloud_service_quota_applied_limit_kafka_cluster{organization_id=~\"$organization_id\"},environment_id)",
-              "refId": "PrometheusVariableQueryEditor-VariableQuery"
-            },
-            "version": "v0"
-          },
-          "refresh": "onDashboardLoad",
-          "regex": "",
-          "regexApplyTo": "value",
-          "skipUrlSync": false,
-          "sort": "disabled"
-        }
-      },
-      {
-        "kind": "QueryVariable",
-        "spec": {
-          "allowCustomValue": true,
-          "current": {
-            "text": "All",
-            "value": "$__all"
-          },
-          "definition": "label_values(confluent_cloud_service_quota_applied_limit_network{organization_id=~\"$organization_id\", environment_id=~\"$environment_id\"},network_id)",
-          "hide": "dontHide",
-          "includeAll": true,
-          "multi": false,
-          "name": "network_id",
-          "options": [],
-          "query": {
-            "datasource": {
-              "name": "PBFA97CFB590B2093"
-            },
-            "group": "prometheus",
-            "kind": "DataQuery",
-            "spec": {
-              "qryType": 1,
-              "query": "label_values(confluent_cloud_service_quota_applied_limit_network{organization_id=~\"$organization_id\", environment_id=~\"$environment_id\"},network_id)",
-              "refId": "PrometheusVariableQueryEditor-VariableQuery"
-            },
-            "version": "v0"
-          },
-          "refresh": "onDashboardLoad",
-          "regex": "",
-          "regexApplyTo": "value",
-          "skipUrlSync": false,
-          "sort": "disabled"
-        }
-      },
-      {
-        "kind": "QueryVariable",
-        "spec": {
-          "allowCustomValue": true,
-          "current": {
-            "text": "All",
-            "value": "$__all"
-          },
-          "definition": "label_values(confluent_cloud_service_quota_applied_limit_kafka_cluster{organization_id=~\"$organization_id\", environment_id=~\"$environment_id\"},kafka_cluster)",
-          "hide": "dontHide",
-          "includeAll": true,
-          "multi": false,
-          "name": "kafka_cluster",
-          "options": [],
-          "query": {
-            "datasource": {
-              "name": "PBFA97CFB590B2093"
-            },
-            "group": "prometheus",
-            "kind": "DataQuery",
-            "spec": {
-              "qryType": 1,
-              "query": "label_values(confluent_cloud_service_quota_applied_limit_kafka_cluster{organization_id=~\"$organization_id\", environment_id=~\"$environment_id\"},kafka_cluster)",
               "refId": "PrometheusVariableQueryEditor-VariableQuery"
             },
             "version": "v0"
