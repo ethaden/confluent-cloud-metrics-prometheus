@@ -2,7 +2,24 @@
   "apiVersion": "dashboard.grafana.app/v2",
   "kind": "Dashboard",
   "metadata": {
-    "name": "grrghrl"
+    "name": "grrghrl",
+    "namespace": "default",
+    "uid": "f1f8239c-1232-46ec-8620-6124e7bc1c5a",
+    "resourceVersion": "1793371601799984",
+    "generation": 1,
+    "creationTimestamp": "2026-10-30T14:46:41Z",
+    "labels": {
+      "grafana.app/deprecatedInternalID": "3991768130347008"
+    },
+    "annotations": {
+      "grafana.app/createdBy": "access-policy:service",
+      "grafana.app/managedBy": "classic-file-provisioning",
+      "grafana.app/managerId": "Prometheus",
+      "grafana.app/sourceChecksum": "6807efcafd0f5aa7e4ed5a1eedcabd2a",
+      "grafana.app/sourcePath": "/etc/grafana/provisioning/dashboards/ccloud_quota_api.json",
+      "grafana.app/sourceTimestamp": "1793371576000",
+      "grafana.app/folder": ""
+    }
   },
   "spec": {
     "annotations": [
@@ -49,7 +66,7 @@
                       "spec": {
                         "editorMode": "builder",
                         "exemplar": false,
-                        "expr": "confluent_cloud_service_quota_default_limit_organization{organization_id=~\"$organization_id|$organization\", quota_id=~\"$quota\"}",
+                        "expr": "confluent_cloud_service_quota_default_limit_organization{organization_id=~\"$organization\", quota_id=~\"$quota\"}",
                         "instant": true,
                         "legendFormat": "__auto",
                         "range": false
@@ -72,7 +89,7 @@
                       "spec": {
                         "editorMode": "builder",
                         "exemplar": false,
-                        "expr": "confluent_cloud_service_quota_applied_limit_organization{organization_id=~\"$organization_id|$organization\", quota_id=~\"$quota\"}",
+                        "expr": "confluent_cloud_service_quota_applied_limit_organization{organization_id=~\"$organization\", quota_id=~\"$quota\"}",
                         "instant": true,
                         "legendFormat": "__auto",
                         "range": false
@@ -956,7 +973,12 @@
                 "cellHeight": "sm",
                 "enablePagination": false,
                 "showHeader": true,
-                "sortBy": []
+                "sortBy": [
+                  {
+                    "desc": true,
+                    "displayName": "Usage [%]"
+                  }
+                ]
               }
             },
             "version": "13.2.2"
@@ -2043,7 +2065,7 @@
           {
             "kind": "RowsLayoutRow",
             "spec": {
-              "collapse": true,
+              "collapse": false,
               "layout": {
                 "kind": "AutoGridLayout",
                 "spec": {
@@ -2073,7 +2095,7 @@
                       "text": "All",
                       "value": "$__all"
                     },
-                    "definition": "label_values(confluent_cloud_service_quota_applied_limit_organization,quota_id)",
+                    "definition": "label_values(confluent_cloud_service_quota_default_limit_organization{organization_id=~\"$organization\"},quota_id)",
                     "hide": "dontHide",
                     "includeAll": true,
                     "multi": false,
@@ -2087,7 +2109,7 @@
                       "kind": "DataQuery",
                       "spec": {
                         "qryType": 1,
-                        "query": "label_values(confluent_cloud_service_quota_applied_limit_organization,quota_id)",
+                        "query": "label_values(confluent_cloud_service_quota_default_limit_organization{organization_id=~\"$organization\"},quota_id)",
                         "refId": "PrometheusVariableQueryEditor-VariableQuery"
                       },
                       "version": "v0"
@@ -2105,7 +2127,7 @@
           {
             "kind": "RowsLayoutRow",
             "spec": {
-              "collapse": true,
+              "collapse": false,
               "hideHeader": false,
               "layout": {
                 "kind": "AutoGridLayout",
@@ -2136,7 +2158,7 @@
                       "text": "All",
                       "value": "$__all"
                     },
-                    "definition": "label_values(confluent_cloud_service_quota_applied_limit_environment,quota_id)",
+                    "definition": "label_values(confluent_cloud_service_quota_default_limit_environment{organization_id=~\"$organization\", environment_id=~\"$environment\"},quota_id)",
                     "hide": "dontHide",
                     "includeAll": true,
                     "multi": false,
@@ -2150,7 +2172,7 @@
                       "kind": "DataQuery",
                       "spec": {
                         "qryType": 1,
-                        "query": "label_values(confluent_cloud_service_quota_applied_limit_environment,quota_id)",
+                        "query": "label_values(confluent_cloud_service_quota_default_limit_environment{organization_id=~\"$organization\", environment_id=~\"$environment\"},quota_id)",
                         "refId": "PrometheusVariableQueryEditor-VariableQuery"
                       },
                       "version": "v0"
@@ -2168,7 +2190,7 @@
           {
             "kind": "RowsLayoutRow",
             "spec": {
-              "collapse": true,
+              "collapse": false,
               "layout": {
                 "kind": "AutoGridLayout",
                 "spec": {
@@ -2198,7 +2220,7 @@
                       "text": "All",
                       "value": "$__all"
                     },
-                    "definition": "label_values(confluent_cloud_service_quota_applied_limit_network,quota_id)",
+                    "definition": "label_values(confluent_cloud_service_quota_default_limit_network{organization_id=~\"$organization\", environment_id=~\"$environment\", network_id=~\"$network\"},quota_id)",
                     "hide": "dontHide",
                     "includeAll": true,
                     "multi": false,
@@ -2212,7 +2234,7 @@
                       "kind": "DataQuery",
                       "spec": {
                         "qryType": 1,
-                        "query": "label_values(confluent_cloud_service_quota_applied_limit_network,quota_id)",
+                        "query": "label_values(confluent_cloud_service_quota_default_limit_network{organization_id=~\"$organization\", environment_id=~\"$environment\", network_id=~\"$network\"},quota_id)",
                         "refId": "PrometheusVariableQueryEditor-VariableQuery"
                       },
                       "version": "v0"
@@ -2232,7 +2254,7 @@
                       "text": "All",
                       "value": "$__all"
                     },
-                    "definition": "label_values(confluent_cloud_service_quota_applied_limit_network,network_id)",
+                    "definition": "label_values(confluent_cloud_service_quota_default_limit_network{organization_id=~\"$organization\", environment_id=~\"$environment\"},network_id)",
                     "hide": "dontHide",
                     "includeAll": true,
                     "multi": false,
@@ -2246,7 +2268,7 @@
                       "kind": "DataQuery",
                       "spec": {
                         "qryType": 1,
-                        "query": "label_values(confluent_cloud_service_quota_applied_limit_network,network_id)",
+                        "query": "label_values(confluent_cloud_service_quota_default_limit_network{organization_id=~\"$organization\", environment_id=~\"$environment\"},network_id)",
                         "refId": "PrometheusVariableQueryEditor-VariableQuery"
                       },
                       "version": "v0"
@@ -2264,7 +2286,7 @@
           {
             "kind": "RowsLayoutRow",
             "spec": {
-              "collapse": true,
+              "collapse": false,
               "layout": {
                 "kind": "AutoGridLayout",
                 "spec": {
@@ -2294,7 +2316,7 @@
                       "text": "All",
                       "value": "$__all"
                     },
-                    "definition": "label_values(confluent_cloud_service_quota_applied_limit_kafka_cluster,quota_id)",
+                    "definition": "label_values(confluent_cloud_service_quota_default_limit_kafka_cluster{organization_id=~\"$organization\", environment_id=~\"$environment\", kafka_cluster=~\"$kafka_cluster\"},quota_id)",
                     "hide": "dontHide",
                     "includeAll": true,
                     "multi": false,
@@ -2308,7 +2330,7 @@
                       "kind": "DataQuery",
                       "spec": {
                         "qryType": 1,
-                        "query": "label_values(confluent_cloud_service_quota_applied_limit_kafka_cluster,quota_id)",
+                        "query": "label_values(confluent_cloud_service_quota_default_limit_kafka_cluster{organization_id=~\"$organization\", environment_id=~\"$environment\", kafka_cluster=~\"$kafka_cluster\"},quota_id)",
                         "refId": "PrometheusVariableQueryEditor-VariableQuery"
                       },
                       "version": "v0"
@@ -2328,7 +2350,7 @@
                       "text": "All",
                       "value": "$__all"
                     },
-                    "definition": "label_values(confluent_cloud_service_quota_applied_limit_kafka_cluster,kafka_cluster)",
+                    "definition": "label_values(confluent_cloud_service_quota_default_limit_kafka_cluster{organization_id=~\"$organization\", environment_id=~\"$environment\"},kafka_cluster)",
                     "hide": "dontHide",
                     "includeAll": true,
                     "multi": false,
@@ -2342,7 +2364,7 @@
                       "kind": "DataQuery",
                       "spec": {
                         "qryType": 1,
-                        "query": "label_values(confluent_cloud_service_quota_applied_limit_kafka_cluster,kafka_cluster)",
+                        "query": "label_values(confluent_cloud_service_quota_default_limit_kafka_cluster{organization_id=~\"$organization\", environment_id=~\"$environment\"},kafka_cluster)",
                         "refId": "PrometheusVariableQueryEditor-VariableQuery"
                       },
                       "version": "v0"
@@ -2405,7 +2427,7 @@
             "text": "All",
             "value": "$__all"
           },
-          "definition": "label_values(confluent_cloud_service_quota_applied_limit_kafka_cluster,organization_id)",
+          "definition": "label_values(confluent_cloud_service_quota_default_limit_organization,organization_id)",
           "hide": "dontHide",
           "includeAll": true,
           "multi": false,
@@ -2419,7 +2441,7 @@
             "kind": "DataQuery",
             "spec": {
               "qryType": 1,
-              "query": "label_values(confluent_cloud_service_quota_applied_limit_kafka_cluster,organization_id)",
+              "query": "label_values(confluent_cloud_service_quota_default_limit_organization,organization_id)",
               "refId": "PrometheusVariableQueryEditor-VariableQuery"
             },
             "version": "v0"
@@ -2439,7 +2461,7 @@
             "text": "All",
             "value": "$__all"
           },
-          "definition": "label_values(confluent_cloud_service_quota_applied_limit_kafka_cluster{organization_id=~\"$organization\"},environment_id)",
+          "definition": "label_values(confluent_cloud_service_quota_default_limit_environment{organization_id=~\"$organization\"},environment_id)",
           "hide": "dontHide",
           "includeAll": true,
           "multi": false,
@@ -2453,7 +2475,7 @@
             "kind": "DataQuery",
             "spec": {
               "qryType": 1,
-              "query": "label_values(confluent_cloud_service_quota_applied_limit_kafka_cluster{organization_id=~\"$organization\"},environment_id)",
+              "query": "label_values(confluent_cloud_service_quota_default_limit_environment{organization_id=~\"$organization\"},environment_id)",
               "refId": "PrometheusVariableQueryEditor-VariableQuery"
             },
             "version": "v0"
