@@ -32,6 +32,6 @@ RUN cd /srv/python \
     && rm -rf /srv/python/__pycache__ /srv/python/*.pyc /srv/python/*.pyo /srv/python/.venv\
     && uv sync
 
-CMD ["/srv/python/.venv/bin/python", "src/confluent_cloud_service_quota_prometheus/ccloud_prometheus_quota_api_exporter.py", "/srv/python/config.yaml"]
+CMD ["/srv/python/.venv/bin/python", "-u", "src/confluent_cloud_service_quota_prometheus/ccloud_prometheus_quota_api_exporter.py", "/srv/python/config.yaml"]
 WORKDIR /srv/python
 USER python

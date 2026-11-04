@@ -221,6 +221,7 @@ if __name__ == '__main__':
     ccloud_config = CCloud_Config(config_file_name)
     auth_provider = CCloud_Auth_Provider.create_auth(ccloud_config.get_auth_config())
     ccloud_exporter = Prometheus_Confluent_Cloud_Quota_Exporter(ccloud_config, auth_provider)
+    print ('Starting Prometheus Confluent Cloud Quota Exporter...')
     try:
         asyncio.run(ccloud_exporter.main())
     except KeyboardInterrupt:

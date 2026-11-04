@@ -13,9 +13,11 @@ class CCloud_Auth_Provider(ABC):
     def create_auth(auth_config: Dict[str, Any]) -> CCloud_Auth_Provider:
         if auth_config['selected'] == 'azure':
             from ccloud_auth_provider_azure import CCloud_Auth_Provider_Azure
+            print (f'Creating Azure auth provider')
             return CCloud_Auth_Provider_Azure(auth_config.get('azure', {}))
         if auth_config['selected'] == 'basicauth':
             from ccloud_auth_provider_basicauth import CCloud_Auth_Provider_BasicAuth
+            print (f'Creating BasicAuth auth provider')
             return CCloud_Auth_Provider_BasicAuth(auth_config.get('basicauth', {}))
         raise RuntimeError('No suitable authentication method configured')
 

@@ -1,4 +1,7 @@
 # Managed identities are only useful when the code runs on Azure.
+# System-managed identities are used by default if this code runs on Azure and such an identity is configured.
+# To use a service account (App Registration) on Azure instead, set the following environment (!) variables:
+# AZURE_TENANT_ID, AZURE_CLIENT_ID, AZURE_CLIENT_SECRET
 # On a developer machine, just run "az login" first, then start the code
 # You can read values from environment variables by using "${env:NAME_OF_THE_ENVIRONMENT_VARIABLE}"
 auth: 
